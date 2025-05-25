@@ -9,11 +9,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "description": "",
   "dependencies": {
+    "axios": "^1.9.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "mysql2": "^3.14.1"
-  },
-  "description": ""
+    "mysql2": "^3.12.0"
+  }
 }

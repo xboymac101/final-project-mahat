@@ -1,0 +1,25 @@
+.posts {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+.post-prev {
+  transition: all 0.3s;
+}
+
+.post-prev:hover {
+  transform: scale(0.9);
+  transition: all 0.3s;
+}
+
+.post-prev img {
+  width: 40rem;
+}
+
+.post-prev .text {
+  text-align: center;
+  color: var(--a-color);
+}

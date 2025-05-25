@@ -1,26 +1,17 @@
-// frontend/src/App.js
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { BrowserRouter } from "react-router-dom";
+import MyRoutes from "./components/MyRoutes";
+import "./App.css";
 
-const App = () => {
-  const [data, setData] = useState(null);
 
-  useEffect(() => {
-    // Fetch data from the backend
-    axios.get('/api/data')  // This will automatically go to the proxy in package.json
-      .then((response) => {
-        setData(response.data.message);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
 
+function App() {
   return (
-    <div>
-      <h1>{data ? data : 'Loading...'}</h1>
+    <div className="App">
+      <BrowserRouter>
+        <MyRoutes/>
+      </BrowserRouter>
     </div>
   );
-};
+}
 
 export default App;
