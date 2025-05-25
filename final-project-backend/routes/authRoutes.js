@@ -1,24 +1,21 @@
 const express = require("express");
-const db = require("../config"); // Connects to your MySQL config
+const db = require("../config"); // Your DB connection
 const router = express.Router();
 
 // --- Register ---
 router.post("/register", (req, res) => {
   const { username, password } = req.body;
 
-  // Basic validation
   if (!username || !password) {
     return res.status(400).json({ error: "Username and password are required." });
   }
 
-  // SQL query to insert a new user
   const query = "INSERT INTO users (username, password) VALUES (?, ?)";
   db.query(query, [username, password], (err, result) => {
     if (err) {
-      console.error("❌ Registration error:", err);
-      return res.status(500).json({ error: "Database error during registration." });
+      console.error("❌ Error during registration:", err);
+      return res.status(500).json({ error: "Registration failed." });
     }
-
     return res.status(201).json({ message: "User registered successfully!" });
   });
 });
@@ -27,21 +24,25 @@ router.post("/register", (req, res) => {
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  // Basic validation
   if (!username || !password) {
     return res.status(400).json({ error: "Username and password are required." });
   }
 
-  // SQL query to check credentials
   const query = "SELECT * FROM users WHERE username = ? AND password = ?";
   db.query(query, [username, password], (err, results) => {
     if (err) {
-      console.error("❌ Login error:", err);
-      return res.status(500).json({ error: "Database error during login." });
+      console.error("❌ Error during login:", err);
+      return res.status(500).json({ error: "Login failed." });
     }
 
     if (results.length > 0) {
-      return res.status(200).json({ message: "Login successful!" });
+      return res.status(200).json({
+        message: "Login successful!",
+        user: {
+          id: results[0].user_id,
+          username: results[0].username
+        }
+      });
     } else {
       return res.status(401).json({ error: "Invalid username or password." });
     }
