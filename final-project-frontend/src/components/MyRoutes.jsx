@@ -8,13 +8,17 @@ import SinglePost from './SinglePost';
 import Main from './Main';
 import State from './State';
 import NewPost from './NewPost';
+import Login from './login/Login';
+import { useState } from 'react';
 
 function MyRoutes() {
+  const [isloggedin, setIsLoggedIn] = useState(false);
   return (
     <>
       <Header />
       <Routes>
-        <Route path='/' element={<MainPage />} />
+        <Route path='/' element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+        
         <Route path='/about' element={<About />} />
         <Route path='/post/:id' element={<SinglePost />} />
         <Route path='/test' element={<State />} />

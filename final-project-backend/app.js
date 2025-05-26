@@ -1,19 +1,24 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-
-const articleRoutes = require('./routes/articles');
+const cors = require("cors");
+const authRoutes = require("./routes/auth");
 const port = 8801;
-
-const cors = require('cors');
 app.use(cors());
 
 app.use(express.json());
 
-app.use('/article', articleRoutes);
+// app.use(session({
+//   secret: 'your_secret_key',
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: { secure: false } // For HTTPS use true
+// }));
+
+app.use("/api/auth", authRoutes);
 app.use((err, req, res, next) => {
   console.error(err); // Log error
   res.status(500).json({
-    error: 'Internal Server Error',
+    error: "Internal Server Error",
     message: err.message,
   });
 });
