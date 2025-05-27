@@ -19,8 +19,8 @@ function MyRoutes() {
     <>
       
       <Routes>
-        <Route path='/' element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path='/Signup' element={<Signup setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path='/' element={<Login />} />
+        <Route path='/Signup' element={<Signup />} />
         <Route path='/books' element={<HomePage />} />
         <Route path='/book/:id' element={<BookDetails />} />
         <Route path='/about' element={<About />} />

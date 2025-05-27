@@ -2,34 +2,52 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import classes from "./signup.module.css";
-export default function Signup() {
-const [name, setName] = useState("");
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [error, setError] = useState("");
-const navigate = useNavigate();
 
-function checkSignup() {
+export default function Signup() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+
+  function checkSignup(e) {
+    e.preventDefault();
+
+    // בדיקה אם הסיסמאות תואמות
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setSuccess("");
+      return;
+    }
+
+    // שליחה לשרת
     axios.post('/api/auth/register', {
-        name, 
-        email, 
-        password ,
-        role: "Regular"
-      })
-      .then((res) => {
-        setError(res.data.message);
-        setIsLoggedIn(true);
-        navigate('/books');
-      })
-      .catch((err) => {
-       setError(err.response.data.message);
-      });
-    
+      name,
+      email,
+      password,
+      role: "Regular"
+    })
+    .then((res) => {
+      setSuccess(res.data.message);
+      setError("");
+
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    })
+    .catch((err) => {
+      setError(err.response?.data?.message || "Signup failed.");
+      setSuccess("");
+    });
   }
+
   return (
     <div className={classes.signupContainer}>
       <h2 className={classes.signupTitle}>Sign Up</h2>
       <img src="/logo.png" alt="logo" className={classes.signupLogo} />
+
       <form onSubmit={checkSignup}>
         <label>Name</label>
         <input
@@ -51,25 +69,31 @@ function checkSignup() {
 
         <label>Password</label>
         <input
-        onChange={(e) => setPassword(e.target.value)}
-        type="password" 
-        id="password" 
-        name="password" 
-        value={password} 
-        placeholder="Create a password"
-        required
-       
+          type="password"
+          placeholder="Create password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
         />
-        {error && <p style={{ marginTop: '15px', color: 'red' }}>{error}</p>}
+
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          placeholder="Confirm password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+
+        {error && <div className={classes.errorBox}>{error}</div>}
+        {success && <div className={classes.successBox}>{success}</div>}
+
         <button type="submit">Sign up</button>
       </form>
-
-        {error && <p style={{ marginTop: '15px', color: 'green' }}>{error}</p>}
 
       <p className="login-footer">
         Already have an account? <a href="/">Login</a>
       </p>
     </div>
-
-  )
+  );
 }
