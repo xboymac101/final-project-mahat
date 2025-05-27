@@ -20,7 +20,7 @@ function MyRoutes() {
     <>
       
       <Routes>
-        <Route path='/' element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path='/' element={<Login />} />
         <Route path='/Signup' element={<Signup />} />
         <Route path='/books' element={<HomePage />} />
         <Route path='/book/:id' element={<BookDetails />} />
