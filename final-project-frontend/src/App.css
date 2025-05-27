@@ -459,22 +459,3 @@ footer {
 .error {
   color: red;
 }
-.app-wrapper {
-  min-height: 100vh;
-  /* Full viewport height */
-  display: flex;
-  flex-direction: column;
-  /* Stack children vertically */
-}
-
-.app-wrapper>main,
-.app-wrapper>.main-content {
-  flex: 1;
-  /* Grow to fill space between header and footer */
-}
-
-footer {
-  margin-top: auto;
-  /* Push footer to the bottom */
-  width: 100%;
-}
