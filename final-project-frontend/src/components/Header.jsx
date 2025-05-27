@@ -38,12 +38,12 @@ function Header() {
               </li>
               <li>
                 <NavLink
-                  to='/contact'
+                  to='/categories'
                   className={({ isActive }) =>
                     isActive ? 'menu-item active' : 'menu-item'
                   }
                 >
-                  Contact
+                  Categories
                 </NavLink>
               </li>
               <li>
