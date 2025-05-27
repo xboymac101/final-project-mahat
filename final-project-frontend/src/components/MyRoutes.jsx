@@ -12,6 +12,7 @@ import Login from './login/Login';
 import { useState } from 'react';
 import HomePage from '../components/homepage/HomePage'
 import BookDetails from './BookDetails';
+import Signup from './signup/Signup';
 function MyRoutes() {
   const [isloggedin, setIsLoggedIn] = useState(false);
   return (
@@ -19,6 +20,7 @@ function MyRoutes() {
       
       <Routes>
         <Route path='/' element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path='/Signup' element={<Signup setIsLoggedIn={setIsLoggedIn} />} />
         <Route path='/books' element={<HomePage />} />
         <Route path='/book/:id' element={<BookDetails />} />
         <Route path='/about' element={<About />} />

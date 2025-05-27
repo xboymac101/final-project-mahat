@@ -5,31 +5,30 @@ const db = dbSingleton.getConnection();
 
 
 // רישום משתמש חדש
-router.post("/register", (req, res) => {
-  const { name, email, password, role } = req.body;
+router.post('/register', (req, res) => {
+  const { name, email, password ,registration_date,role} = req.body;
 
   const query = `
-    INSERT INTO users (name, email, password, registration_date, status, role)
-    VALUES (?, ?, ?, CURDATE(), 'Active', ?)
+    INSERT INTO users (name, email, password, registration_date,role)
+    VALUES (?, ?, ?, ?,?)
   `;
 
-  db.query(query, [name, email, password, role], (err, result) => {
+  db.query(query, [name, email, password,registration_date,role], (err, result) => {
     if (err) {
-      console.error("Registration error:", err);
-      return res.status(500).json({ message: "Server error" });
+      console.error('Registration error:', err);
+      return res.status(500).json({ message: 'Server error' });
     }
 
-    res.status(201).json({ message: "User registered successfully!" });
+    res.status(201).json({ message: 'User registered successfully' });
   });
-});
-
+})
 // התחברות
 router.post("/login", (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  const query = `SELECT * FROM users WHERE username = ? AND password = ? `;
+  const query = `SELECT * FROM users WHERE email = ? AND password = ? `;
 
-  db.query(query, [username, password], (err, results) => {
+  db.query(query, [email, password], (err, results) => {
     if (err) {
       console.error("Login error:", err);
       return res.status(500).json({ message: "Server error" });
@@ -46,7 +45,7 @@ router.post("/login", (req, res) => {
         },
       });
     } else {
-      res.status(401).json({ message: "Invalid username or password" });
+      res.status(401).json({ message: "Invalid email or password" });
     }
   });
 });
