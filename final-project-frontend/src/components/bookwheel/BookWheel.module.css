@@ -1,0 +1,28 @@
+.bookImg {
+  width: 145px;
+  height: 205px;
+  object-fit: cover;
+  border-radius: 9px;
+  box-shadow: 0 3px 12px #0002;
+  margin-bottom: 10px;
+  background: #eee;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.booksRow {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: flex-start;
+  flex: 1;
+  overflow: hidden;
+}
+
+.bookCard {
+  width: 165px;
+  min-width: 140px;
+  background: none;
+  text-align: center;
+}

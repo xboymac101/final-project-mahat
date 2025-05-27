@@ -56,6 +56,16 @@ function Header() {
                 >
                   Test
                 </NavLink>
+                </li>
+                <li>
+                <NavLink
+                   to='/books'
+                  className={({ isActive }) =>
+                      isActive ? 'menu-item active' : 'menu-item'
+                    }
+                  >
+                    Books
+                  </NavLink>
               </li>
             </ul>
           </nav>
