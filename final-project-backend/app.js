@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const port = 8801;
+const booksRoutes = require("./routes/books");
 app.use(cors());
 
 app.use(express.json());
@@ -13,7 +14,7 @@ app.use(express.json());
 //   saveUninitialized: true,
 //   cookie: { secure: false } // For HTTPS use true
 // }));
-
+app.use('/api/books', booksRoutes);
 app.use("/api/auth", authRoutes);
 app.use((err, req, res, next) => {
   console.error(err); // Log error

@@ -18,7 +18,7 @@ function checkSignup() {
       })
       .then((res) => {
         setError(res.data.message);
-        setIsLoggedIn(true);
+     
         navigate('/books');
       })
       .catch((err) => {
