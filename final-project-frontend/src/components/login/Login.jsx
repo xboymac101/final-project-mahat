@@ -22,7 +22,7 @@ const handleLogin = (e) => {
       .then((res) => {
         setError(res.data.message);
         setIsLoggedIn(true);
-        navigate('/about');
+        navigate('/books');
       })
       .catch((err) => {
        setError(err.response.data.message);

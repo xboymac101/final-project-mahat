@@ -6,7 +6,6 @@ export default function Signup() {
 const [name, setName] = useState("");
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
-const [registrationDate, setRegistrationDate] = useState("");
 const [error, setError] = useState("");
 const navigate = useNavigate();
 
@@ -15,7 +14,6 @@ function checkSignup() {
         name, 
         email, 
         password ,
-        registrationDate,
         role: "Regular"
       })
       .then((res) => {
@@ -62,18 +60,15 @@ function checkSignup() {
         required
        
         />
-        <label>Registration Date</label>
-        <input
-          type="date"
-          value={registrationDate}
-          onChange={(e) => setRegistrationDate(e.target.value)}
-          
-          required
-        />
-        
         {error && <p style={{ marginTop: '15px', color: 'red' }}>{error}</p>}
         <button type="submit">Sign up</button>
       </form>
+
+        {error && <p style={{ marginTop: '15px', color: 'green' }}>{error}</p>}
+
+      <p className="login-footer">
+        Already have an account? <a href="/">Login</a>
+      </p>
     </div>
 
   )

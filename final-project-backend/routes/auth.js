@@ -6,14 +6,14 @@ const db = dbSingleton.getConnection();
 
 // רישום משתמש חדש
 router.post('/register', (req, res) => {
-  const { name, email, password ,registration_date,role} = req.body;
+  const { name, email, password ,role} = req.body;
 
   const query = `
     INSERT INTO users (name, email, password, registration_date,role)
-    VALUES (?, ?, ?, ?,?)
+    VALUES (?, ?, ?, CURDATE(),?)
   `;
 
-  db.query(query, [name, email, password,registration_date,role], (err, result) => {
+  db.query(query, [name, email, password,role], (err, result) => {
     if (err) {
       console.error('Registration error:', err);
       return res.status(500).json({ message: 'Server error' });
