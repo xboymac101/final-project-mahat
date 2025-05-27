@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
+import classes from "./login.module.css";
 export default function Login({setIsLoggedIn}) {
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
@@ -14,7 +15,7 @@ const handleLogin = (e) => {
   };
 
   function checkLogin() {
-    axios.post('/login', {
+    axios.post('/api/auth/login', {
         email,
         password
       })
@@ -30,14 +31,14 @@ const handleLogin = (e) => {
   }
 
   return (
-    <div className="login-container">
-      <h2 className="login-title">Login</h2>
-      <img src="/logo.png" alt="logo" className="login-logo" />
+    <div className={classes.loginContainer}>
+      <h2 className={classes.loginTitle}>Login</h2>
+      <img src="/logo.png" alt="logo" className={classes.loginLogo} />
 
       <form onSubmit={handleLogin}>
         <label> Email</label>
         <input
-          type="text"
+          type="email"
           placeholder="Enter Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
