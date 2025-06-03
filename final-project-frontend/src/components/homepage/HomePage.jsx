@@ -15,7 +15,7 @@ function BooksHome() {
   return (
     <div className={styles.booksHome}>
       <h1 className={styles.booksHomeTitle}>Books</h1>
-      <BookWheel books={books} />  {/* ← Pass books here! */}
+      <BookWheel books={books} /> 
       <div className={styles.booksGrid}>
         {books.map(book => (
           <Link to={`/book/${book.book_id}`} key={book.book_id} style={{ textDecoration: "none", color: "inherit" }}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import logo from '../assets/img/logo.png';
+import logo from '../assets/img/Logo.png';
 
 function Header() {
   return (
@@ -9,8 +9,8 @@ function Header() {
         <div className='header__wrap'>
           <div className='logo'>
             <Link to='/'>
-              <img src={logo} alt='logo' />
-              <span className='slogan'>Test project</span>
+              <img src={logo} alt='logo' /> 
+              <span className='slogan'>BookHaven</span>
             </Link>
           </div>
           <nav>
@@ -48,13 +48,13 @@ function Header() {
               </li>
               <li>
                 <NavLink
-                  to='/test'
+                  to='/rules'
                   className={({ isActive }) =>
                     isActive ? 'menu-item active' : 'menu-item'
                   }
                   end
                 >
-                  Test
+                  Rules
                 </NavLink>
                 </li>
                 <li>

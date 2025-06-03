@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './Categories.module.css';
 import axios from "axios";
-
-const CATEGORIES = [
-  "All", "Fiction", "Non-Fiction", "Biography", "Cookbooks", "Comics", "Children's Books", "Art & Craft"
-];
-
-const GENRES = [
-  "Fantasy", "Classic", "Science Fiction", "Romance", "Mystery", "Adventure", "Satire", "Epic", "Historical", "Horror", "Absurdist", "Modernist", "Philosophical", "Crime"
-];
 
 function CategoriesPage() {
   const [books, setBooks] = useState([]);
@@ -26,6 +19,10 @@ function CategoriesPage() {
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filter changes
   }, [selectedCategory, selectedGenres]);
+
+  // Extract unique categories and genres from books
+  const uniqueCategories = ["All", ...Array.from(new Set(books.map(book => book.category)))];
+  const uniqueGenres = Array.from(new Set(books.map(book => book.genre)));
 
   // Filtering logic
   const filteredBooks = books.filter(book => {
@@ -56,7 +53,7 @@ function CategoriesPage() {
     <div className={styles.categoriesPage}>
       {/* Top: Category pills */}
       <div className={styles.categoriesRow}>
-        {CATEGORIES.map(cat => (
+        {uniqueCategories.map(cat => (
           <button
             key={cat}
             className={selectedCategory === cat ? styles.activeCategory : styles.categoryPill}
@@ -72,7 +69,7 @@ function CategoriesPage() {
         <aside className={styles.sidebar}>
           <h3 className={styles.sidebarTitle}>Genres</h3>
           <ul className={styles.genresList}>
-            {GENRES.map(genre => (
+            {uniqueGenres.map(genre => (
               <li key={genre}>
                 <label className={styles.checkboxLabel}>
                   <input
@@ -91,11 +88,18 @@ function CategoriesPage() {
         <section className={styles.booksGrid}>
           {displayedBooks.length === 0 && <div>No books found.</div>}
           {displayedBooks.map(book => (
-            <div key={book.book_id} className={styles.bookCard}>
-              <img src={book.img} alt={book.title} className={styles.bookImg} />
-              <div className={styles.bookTitle}>{book.title}</div>
-              <div className={styles.bookAuthor}>{book.author}</div>
-            </div>
+            <Link
+              to={`/book/${book.book_id}`}
+              key={book.book_id}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <div className={styles.bookCard}>
+                <img src={book.img} alt={book.title} className={styles.bookImg} />
+                <div className={styles.bookTitle}>{book.title}</div>
+                <div className={styles.bookAuthor}>{book.author}</div>
+                {book.price && <div className={styles.bookPrice}>${book.price}</div>}
+              </div>
+            </Link>
           ))}
         </section>
       </div>

@@ -14,6 +14,7 @@ import { useState } from 'react';
 import HomePage from '../components/homepage/HomePage'
 import BookDetails from '../components/bookdetails/BookDetails';
 import Signup from './signup/Signup';
+import Rules from './rules/Rules'
 function MyRoutes() {
   const [isloggedin, setIsLoggedIn] = useState(false);
   return (
@@ -26,6 +27,7 @@ function MyRoutes() {
         <Route path='/book/:id' element={<BookDetails />} />
         <Route path="/categories" element={<Categories />} />
         <Route path='/about' element={<About />} />
+        <Route path='/rules' element={<Rules />} />
         <Route path='/post/:id' element={<SinglePost />} />
         <Route path='/test' element={<State />} />
         <Route path='/newpost' element={<NewPost />} />

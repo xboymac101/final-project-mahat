@@ -1,0 +1,76 @@
+.rulesContainer {
+  background: linear-gradient(135deg, #f3e7fa 10%, #f9fafc 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 50px 0;
+}
+
+.rulesCard {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 6px 28px 0 rgba(123, 104, 238, 0.12);
+  max-width: 540px;
+  width: 100%;
+  padding: 36px 36px 28px 36px;
+  margin-top: 20px;
+}
+
+.title {
+  color: #5a41c6;
+  font-size: 2.4rem;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.rulesList {
+  list-style: decimal inside;
+  padding-left: 0;
+  margin: 0;
+}
+
+.ruleItem {
+  background: #f6f3ff;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  padding: 20px 30px 20px 56px;
+  font-size: 1.35rem;
+  color: #382f61;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(90, 65, 198, 0.06);
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Number styling, well separated from the text */
+.ruleItem::marker {
+  font-weight: bold;
+  color: #7c4dff;
+  font-size: 1.7rem;
+  margin-right: 16px;
+}
+
+/* Extra space before the rule text for the number */
+.ruleItem {
+  padding-left: 24px;
+}
+
+@media (max-width: 600px) {
+  .rulesCard {
+    padding: 18px 4vw 14px 4vw;
+    max-width: 98vw;
+  }
+
+  .title {
+    font-size: 1.35rem;
+  }
+
+  .ruleItem {
+    font-size: 1.05rem;
+    padding: 12px 8px 12px 30px;
+  }
+}
