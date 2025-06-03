@@ -1,30 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import About from '../components/about/About';
-import Categories from '../components/categories/Categories'
+import AboutPage from '../components/about/About';
+import Categories from '../components/categories/Categories';
 import Login from './login/Login';
-import { useState } from 'react';
-import HomePage from '../components/homepage/HomePage'
+import HomePage from '../components/homepage/HomePage';
 import BookDetails from '../components/bookdetails/BookDetails';
 import Signup from './signup/Signup';
-import Rules from './rules/Rules'
-function MyRoutes() {
-  const [isloggedin, setIsLoggedIn] = useState(false);
-  return (
-    <>
-      
-      <Routes>
-        <Route path='/' element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path='/Signup' element={<Signup />} />
-        <Route path='/books' element={<HomePage />} />
-        <Route path='/book/:id' element={<BookDetails />} />
-        <Route path="/categories" element={<Categories />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/rules' element={<Rules />} />
+import Rules from './rules/Rules';
+import ProtectedRoute from '../components/protectedroute/ProtectedRoute'; 
 
-      </Routes>
-      
-    </>
+function MyRoutes() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  return (
+    <Routes>
+      <Route path='/' element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+      <Route path='/Signup' element={<Signup />} />
+      {/* Protected Routes */}
+      <Route
+        path='/books'
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/book/:id'
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <BookDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/categories"
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <Categories />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/about'
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <AboutPage/>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/rules'
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <Rules />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

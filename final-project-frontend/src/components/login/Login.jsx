@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from '../../assets/img/Logo.png';
 import axios from "axios";
 import classes from "./login.module.css";
 export default function Login({setIsLoggedIn}) {
@@ -35,7 +36,7 @@ const handleLogin = (e) => {
   return (
     <div className={classes.loginContainer}>
       <h2 className={classes.loginTitle}>Login</h2>
-      <img src="/logo.png" alt="logo" className={classes.loginLogo} />
+      <img src= {logo} alt="logo" className={classes.loginLogo} />
 
       <form onSubmit={handleLogin}>
         <label> Email</label>

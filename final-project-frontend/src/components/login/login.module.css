@@ -1,0 +1,9 @@
+.loginLogo {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  /* Ensures the image keeps aspect ratio */
+  display: block;
+  margin: 0 auto;
+  /* centers it horizontally, optional */
+}

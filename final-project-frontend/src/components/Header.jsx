@@ -8,7 +8,7 @@ function Header() {
       <div className='container'>
         <div className='header__wrap'>
           <div className='logo'>
-            <Link to='/'>
+            <Link to='/books'>
               <img src={logo} alt='logo' /> 
               <span className='slogan'>BookHaven</span>
             </Link>
@@ -17,7 +17,7 @@ function Header() {
             <ul className='menu'>
               <li>
                 <NavLink
-                  to='/'
+                  to='/books'
                   className={({ isActive }) =>
                     isActive ? 'menu-item active' : 'menu-item'
                   }
@@ -59,12 +59,12 @@ function Header() {
                 </li>
                 <li>
                 <NavLink
-                   to='/books'
+                   to='/'
                   className={({ isActive }) =>
                       isActive ? 'menu-item active' : 'menu-item'
                     }
                   >
-                    Books
+                    Login
                   </NavLink>
               </li>
             </ul>
