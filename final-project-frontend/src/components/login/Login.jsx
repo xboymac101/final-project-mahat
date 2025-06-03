@@ -20,11 +20,13 @@ const handleLogin = (e) => {
         password
       })
       .then((res) => {
+        console.log("Login response:", res);
         setError(res.data.message);
         setIsLoggedIn(true);
         navigate('/books');
       })
       .catch((err) => {
+        console.log("Login error:", err);
        setError(err.response.data.message);
       });
     
