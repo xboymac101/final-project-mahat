@@ -1,66 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import styles from'./BookWheel.module.css'; // Make a simple CSS file for the wheel
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import styles from './BookWheel.module.css';
 
-const books = [
-  {
-    id: 1,
-    img: 'https://prodimage.images-bn.com/pimages/9780316565245_p0_v3_s1200x630.jpg',
-    name: 'The Knight and the Moth (B&N Exclusive Edition)',
-    author: 'Rachel Gillig'
-  },
-  {
-    id: 2,
-    img: 'https://prodimage.images-bn.com/pimages/9781339019036_p0_v1_s1200x630.jpg',
-    name: 'Sunrise on the Reaping (A Hunger Games Novel)',
-    author: 'Suzanne Collins'
-  },
-  {
-    id: 3,
-    img: 'https://prodimage.images-bn.com/pimages/9780593242761_p0_v2_s1200x630.jpg',
-    name: 'The Let Them Theory: A Life-Changing Tool',
-    author: 'Mel Robbins'
-  },
-  {
-    id: 4,
-    img: 'https://prodimage.images-bn.com/pimages/9780593597540_p0_v1_s1200x630.jpg',
-    name: 'Remarkably Bright Creatures (B&N Exclusive Edition)',
-    author: 'Shelby Van Pelt'
-  },
-  {
-    id: 5,
-    img: 'https://prodimage.images-bn.com/pimages/9781728278767_p0_v2_s1200x630.jpg',
-    name: 'The Tenant (B&N Exclusive Edition)',
-    author: 'Freida McFadden'
-  },
-  {
-    id: 6,
-    img: 'https://prodimage.images-bn.com/pimages/9781957635997_p0_v1_s1200x630.jpg',
-    name: 'Shield of Sparrows',
-    author: 'Devney Perry'
-  },
-  {
-    id: 7,
-    img: 'https://prodimage.images-bn.com/pimages/9781957635980_p0_v1_s1200x630.jpg',
-    name: 'Lights Out: An Into Darkness Novel',
-    author: 'Navessa Allen'
-  }
-];
-
-function BookWheel() {
+function BookWheel({ books = [] }) {
   const [start, setStart] = useState(0);
-  const visibleCount = 6; // How many books to show at once
+  const visibleCount = 6;
 
-  // Auto-slide every 3s
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStart(prev => (prev + 1) % books.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  if (!books || books.length === 0) return null; // Don't render if no books
 
-  // Show only the visible books
   const visibleBooks = [];
-  for (let i = 0; i < visibleCount; i++) {
+  for (let i = 0; i < visibleCount && books.length > 0; i++) {
     visibleBooks.push(books[(start + i) % books.length]);
   }
 
@@ -75,17 +24,22 @@ function BookWheel() {
     <div className={styles.sliderWrapper}>
       <div className={styles.headerRow}>
         <h2 className={styles.title}>Bestsellers</h2>
-        <a href="#" className={styles.seeAll}>See All</a>
+        <Link to="/books" className={styles.seeAll}>See All</Link>
       </div>
       <div className={styles.carousel}>
         <button className={styles.arrow} onClick={prevSlide}>&lt;</button>
         <div className={styles.booksRow}>
           {visibleBooks.map(book => (
-            <div key={book.id} className={styles.bookCard}>
-              <img src={book.img} alt={book.name} className={styles.bookImg} />
-              <div className={styles.bookName}>{book.name.length > 32 ? book.name.slice(0, 29) + '...' : book.name}</div>
-              <div className={styles.bookAuthor}>{book.author}</div>
-            </div>
+            <Link to={`/book/${book.book_id}`} key={book.book_id} style={{ textDecoration: "none", color: "inherit" }}>
+              <div className={styles.bookCard}>
+                <img src={book.img} alt={book.title} className={styles.bookImg} />
+                <div className={styles.bookName}>
+                  {book.title.length > 32 ? book.title.slice(0, 29) + '...' : book.title}
+                </div>
+                <div className={styles.bookAuthor}>{book.author}</div>
+                {book.price && <div className={styles.bookPrice}>${book.price}</div>}
+              </div>
+            </Link>
           ))}
         </div>
         <button className={styles.arrow} onClick={nextSlide}>&gt;</button>

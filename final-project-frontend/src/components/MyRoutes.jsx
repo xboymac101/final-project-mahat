@@ -12,7 +12,7 @@ import NewPost from './NewPost';
 import Login from './login/Login';
 import { useState } from 'react';
 import HomePage from '../components/homepage/HomePage'
-import BookDetails from './BookDetails';
+import BookDetails from '../components/bookdetails/BookDetails';
 import Signup from './signup/Signup';
 function MyRoutes() {
   const [isloggedin, setIsLoggedIn] = useState(false);

@@ -1,0 +1,138 @@
+.page {
+  padding: 32px 0;
+  background: #fafbfc;
+  min-height: 100vh;
+}
+
+.topSection {
+  display: flex;
+  align-items: flex-start;
+  max-width: 950px;
+  margin: 0 auto 32px;
+  gap: 32px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #ececec;
+  padding: 30px 32px;
+}
+
+.cover {
+  width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px #ececec;
+}
+
+.info {
+  flex: 1;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.author {
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.detail {
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.desc {
+  margin-top: 16px;
+  color: #232325;
+}
+
+.buttonRow {
+  margin-top: 24px;
+  display: flex;
+  gap: 18px;
+}
+
+.actionButton {
+  background: #2ecc40;
+  color: #fff;
+  border: none;
+  padding: 10px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.actionButton:hover {
+  background: #25a130;
+}
+
+.section {
+  max-width: 950px;
+  margin: 0 auto 38px;
+}
+
+.reviewRow {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.reviewCard {
+  background: #fffde7;
+  border: 1.5px solid #ffe082;
+  border-radius: 14px;
+  padding: 16px;
+  min-width: 220px;
+  max-width: 270px;
+  box-shadow: 0 2px 10px #fffbe6;
+}
+
+.relatedRow {
+  display: flex;
+  gap: 18px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.relatedCard {
+  background: #fff;
+  border: 2px solid #a99df4;
+  border-radius: 12px;
+  padding: 12px 16px 10px 16px;
+  min-width: 140px;
+  max-width: 155px;
+  box-shadow: 0 2px 12px #e8e8f7;
+  text-align: center;
+  transition: transform 0.13s, box-shadow 0.13s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.relatedCard:hover {
+  transform: translateY(-5px) scale(1.045);
+  box-shadow: 0 6px 20px #bba6fc66;
+}
+
+.relatedImg {
+  width: 75px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.relatedTitle {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.relatedAuthor {
+  font-size: 0.95rem;
+  color: #7668c1;
+  margin-top: 1px;
+}

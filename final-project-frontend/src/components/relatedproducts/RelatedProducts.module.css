@@ -1,0 +1,50 @@
+.section {
+  max-width: 950px;
+  margin: 0 auto 38px;
+}
+
+.relatedRow {
+  display: flex;
+  gap: 18px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.relatedCard {
+  background: #fff;
+  border: 2px solid #a99df4;
+  border-radius: 12px;
+  padding: 12px 16px 10px 16px;
+  min-width: 140px;
+  max-width: 155px;
+  box-shadow: 0 2px 12px #e8e8f7;
+  text-align: center;
+  transition: transform 0.13s, box-shadow 0.13s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.relatedCard:hover {
+  transform: translateY(-5px) scale(1.045);
+  box-shadow: 0 6px 20px #bba6fc66;
+}
+
+.relatedImg {
+  width: 75px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.relatedTitle {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.relatedAuthor {
+  font-size: 0.95rem;
+  color: #7668c1;
+  margin-top: 1px;
+}
