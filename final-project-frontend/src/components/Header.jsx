@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import logo from '../assets/img/Logo.png';
-
+import { FaShoppingCart } from 'react-icons/fa';
 function Header() {
   return (
     <header>
@@ -60,6 +60,26 @@ function Header() {
                 <li>
                 <NavLink
                    to='/'
+                  className={({ isActive }) =>
+                      isActive ? 'menu-item active' : 'menu-item'
+                    }
+                  >
+                    
+                  </NavLink>
+              </li>
+              <li>
+                <NavLink
+                   to='/'
+                  className={({ isActive }) =>
+                      isActive ? 'menu-item active' : 'menu-item'
+                    }
+                  >
+                    <FaShoppingCart size={22} />
+                  </NavLink>
+              </li>
+                <li>
+                <NavLink
+                   to='/shoppingcart'
                   className={({ isActive }) =>
                       isActive ? 'menu-item active' : 'menu-item'
                     }

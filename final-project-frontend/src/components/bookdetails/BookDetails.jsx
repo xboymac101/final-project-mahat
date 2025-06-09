@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import classes from "./BookDetails.module.css";
 import Reviews from "../reviews/Reviews"
 import RelatedProducts from "../relatedproducts/RelatedProducts";
-
+import axios from "axios";
 function BookDetails() {
   const { id } = useParams();
   const [book, setBook] = useState(null);

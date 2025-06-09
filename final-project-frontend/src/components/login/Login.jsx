@@ -19,7 +19,7 @@ const handleLogin = (e) => {
     axios.post('/api/auth/login', {
         email,
         password
-      })
+      }, { withCredentials: true }) 
       .then((res) => {
         console.log("Login response:", res);
         setError(res.data.message);
