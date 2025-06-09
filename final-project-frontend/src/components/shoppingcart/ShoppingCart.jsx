@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function ShoppingCart({ user_id }) {
+export default function ShoppingCart() {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/cart/${user_id}`)
-      .then(res => setCart(res.data))
-      .catch(err => console.error(err));
-  }, [user_id]);
+    axios
+      .get("/api/cart", { withCredentials: true }) // <--- Only this!
+      .then((res) => setCart(res.data))
+      .catch((err) => {
+        console.error(err);
+        // Optional: handle unauthorized (not logged in)
+        if (err.response && err.response.status === 401) {
+          alert("Please log in to view your cart.");
+        }
+      });
+  }, []);
 
   const total = cart.reduce((sum, item) => sum + item.price * item.amount, 0);
 

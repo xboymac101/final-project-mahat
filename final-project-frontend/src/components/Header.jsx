@@ -69,7 +69,7 @@ function Header() {
               </li>
               <li>
                 <NavLink
-                   to='/'
+                   to='/shoppingcart'
                   className={({ isActive }) =>
                       isActive ? 'menu-item active' : 'menu-item'
                     }
@@ -79,7 +79,7 @@ function Header() {
               </li>
                 <li>
                 <NavLink
-                   to='/shoppingcart'
+                   to='/'
                   className={({ isActive }) =>
                       isActive ? 'menu-item active' : 'menu-item'
                     }

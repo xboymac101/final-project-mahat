@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // Adjust path if needed
+const dbSingleton = require('../dbSingleton');
+const db = dbSingleton.getConnection();
 
 // Add to cart
 router.post('/add', (req, res) => {
