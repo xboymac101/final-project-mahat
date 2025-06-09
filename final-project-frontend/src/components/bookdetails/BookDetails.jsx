@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import classes from "./BookDetails.module.css";
-import Reviews from "../reviews/Reviews"
+import Reviews from "../reviews/Reviews";
 import RelatedProducts from "../relatedproducts/RelatedProducts";
-import axios from "axios";
+import axios from "axios";import QuantityPicker from "./QuantityPicker"; 
+
 function BookDetails() {
   const { id } = useParams();
   const [book, setBook] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(0); 
 
   useEffect(() => {
     setLoading(true);
@@ -68,6 +70,19 @@ function BookDetails() {
           <div className={classes.detail}><b>Genre:</b> {book.genre}</div>
           <div className={classes.desc}>{book.description}</div>
           <div className={classes.price}><b>Price:</b> ${book.price}</div>
+
+          {/* ✅ Quantity Picker */}
+          {book.count > 0 ? (
+            <div style={{ margin: "15px 0" }}>
+              <QuantityPicker
+                maxCount={book.count}
+                onChange={(val) => setQuantity(val)}
+              />
+            </div>
+          ) : (
+            <div style={{ color: "red", margin: "10px 0" }}>Out of stock</div>
+          )}
+
           <div className={classes.buttonRow}>
           <button className={classes.actionButton} onClick={handleAddToCart}>
             Add To Cart
