@@ -8,7 +8,7 @@ import BookDetails from '../components/bookdetails/BookDetails';
 import Signup from './signup/Signup';
 import Rules from './rules/Rules';
 import ProtectedRoute from '../components/protectedroute/ProtectedRoute'; 
-
+import ShoppingCart from '../components/shoppingcart/ShoppingCart';
 function MyRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -46,6 +46,14 @@ function MyRoutes() {
         element={
           <ProtectedRoute isLoggedIn={isLoggedIn}>
             <AboutPage/>
+          </ProtectedRoute>
+        }
+      />
+            <Route
+        path='/shoppingcart'
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <ShoppingCart />
           </ProtectedRoute>
         }
       />

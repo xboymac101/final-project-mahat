@@ -43,19 +43,22 @@ router.post('/add', (req, res) => {
 // Get cart by user
 router.get('/', (req, res) => {
   const user_id = req.session.user_id;
+  console.log("Fetching cart for user:", user_id);  // <-- Add this
   if (!user_id) return res.status(401).json({ message: 'Not logged in' });
 
   const sql = `
-    SELECT sc.id, sc.book_id, sc.amount, b.title, b.price, b.image
+    SELECT sc.id, sc.book_id, sc.amount, b.title, b.price, b.img
     FROM shoppingcart sc
-    JOIN books b ON sc.book_id = b.book_id
+    JOIN book b ON sc.book_id = b.book_id
     WHERE sc.user_id = ?
   `;
   db.query(sql, [user_id], (err, results) => {
-    if (err) return res.status(500).json({ message: 'Server error' });
+    if (err) {
+      console.error("Cart SQL error:", err);  // <-- Add this
+      return res.status(500).json({ message: 'Server error' });
+    }
     res.json(results);
   });
 });
-
 
 module.exports = router;
