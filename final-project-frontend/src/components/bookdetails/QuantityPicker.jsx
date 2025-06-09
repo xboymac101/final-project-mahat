@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from './QuantityPicker.module.css';
 export default function QuantityPicker({ maxCount = 0, onChange }) {
   const [count, setCount] = useState(0);
+  
 
   const handleIncrease = () => {
     if (count < maxCount) {
