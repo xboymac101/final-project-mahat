@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import classes from "./BookDetails.module.css";
 import Reviews from "../reviews/Reviews";
 import RelatedProducts from "../relatedproducts/RelatedProducts";
-import QuantityPicker from "./QuantityPicker"; 
+import axios from "axios";import QuantityPicker from "./QuantityPicker"; 
 
 function BookDetails() {
   const { id } = useParams();
@@ -31,6 +31,29 @@ function BookDetails() {
         setLoading(false);
       });
   }, [id]);
+  const handleAddToCart = () => {
+    // Check if book and book.book_id exist (adjust to your field name)
+    if (!book || !book.book_id) {
+      alert("Book details not loaded.");
+      return;
+    }
+    axios.post(
+      "/api/cart/add",
+      { book_id: book.book_id, amount: 1 }, // Or book.id if your PK is 'id'
+      { withCredentials: true }
+    )
+      .then((res) => {
+        alert(res.data.message || "Added to cart!");
+      })
+      .catch((err) => {
+        if (err.response && err.response.status === 401) {
+          alert("Please log in to add items to your cart.");
+        } else {
+          alert("Failed to add to cart.");
+          console.error(err);
+        }
+      });
+  };
 
   if (loading) return <div>Loading...</div>;
   if (!book) return <div>Book not found.</div>;
@@ -61,13 +84,9 @@ function BookDetails() {
           )}
 
           <div className={classes.buttonRow}>
-            <button
-              className={classes.actionButton}
-              disabled={quantity === 0}
-              onClick={() => alert(`Added ${quantity} to cart!`)}
-            >
-              Add To Cart
-            </button>
+          <button className={classes.actionButton} onClick={handleAddToCart}>
+            Add To Cart
+          </button>
             <button className={classes.actionButton}>Rent</button>
           </div>
         </div>

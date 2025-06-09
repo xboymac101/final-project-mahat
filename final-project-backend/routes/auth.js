@@ -48,7 +48,7 @@ router.post("/login", (req, res) => {
         return res.status(500).json({ message: 'Encryption error' });
       }
       if (isMatch) {
-        // Password matches!
+        req.session.user_id = results[0].user_id;
         res.status(200).json({
           message: "Login successful",
           user: {
@@ -65,5 +65,11 @@ router.post("/login", (req, res) => {
   });
 });
 
+router.get("/me", (req, res) => {
+  if (!req.session.user_id) {
+    return res.status(401).json({ message: "Not logged in" });
+  }
+  res.json({ user_id: req.session.user_id });
+});
 
 module.exports = router;
