@@ -47,7 +47,7 @@ router.get('/', (req, res) => {
   if (!user_id) return res.status(401).json({ message: 'Not logged in' });
 
   const sql = `
-    SELECT sc.id, sc.book_id, sc.amount, b.title, b.price, b.img
+    SELECT sc.id, sc.book_id, sc.amount, b.title, b.price, b.img AS image
     FROM shoppingcart sc
     JOIN book b ON sc.book_id = b.book_id
     WHERE sc.user_id = ?
