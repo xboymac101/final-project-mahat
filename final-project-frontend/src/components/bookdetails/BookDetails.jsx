@@ -12,6 +12,7 @@ function BookDetails() {
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(0); 
+  const [type, setType] = useState("buy");
 
   useEffect(() => {
     setLoading(true);
@@ -31,18 +32,18 @@ function BookDetails() {
         setLoading(false);
       });
   }, [id]);
- const handleAddToCart = () => {
+const handleAddToCart = () => {
   if (!book || !book.book_id) {
     alert("Book details not loaded.");
     return;
   }
   if (!quantity || quantity < 1) {
-    alert("Please select a quantity.");
+    alert("Please select quantity.");
     return;
   }
   axios.post(
     "/api/cart/add",
-    { book_id: book.book_id, amount: quantity },
+    { book_id: book.book_id, amount: quantity, type },  // <-- include type!
     { withCredentials: true }
   )
     .then((res) => {
@@ -51,12 +52,12 @@ function BookDetails() {
     .catch((err) => {
       if (err.response && err.response.status === 401) {
         alert("Please log in to add items to your cart.");
-      } else if (err.response && err.response.status === 400) {
-        alert(err.response.data.message || "Bad request.");
+      } else if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message);
       } else {
         alert("Failed to add to cart.");
-        console.error(err);
       }
+      console.error(err);
     });
 };
 
@@ -87,7 +88,28 @@ function BookDetails() {
           ) : (
             <div style={{ color: "red", margin: "10px 0" }}>Out of stock</div>
           )}
-
+          <div style={{ margin: "10px 0" }}>
+           <label>
+           <input
+              type="radio"
+              value="buy"
+              checked={type === "buy"}
+              onChange={() => setType("buy")}
+              style={{ marginRight: 5 }}
+            />
+            Buy
+          </label>
+          <label style={{ marginLeft: 15 }}>
+            <input
+              type="radio"
+              value="rent"
+              checked={type === "rent"}
+              onChange={() => setType("rent")}
+              style={{ marginRight: 5 }}
+            />
+            Rent
+          </label>
+        </div>
           <div className={classes.buttonRow}>
           <button
           className={classes.actionButton}

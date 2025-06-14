@@ -23,15 +23,15 @@ const [processing, setProcessing] = useState(false);
       });
   }
 
-  function handleRemove(book_id) {
-    axios.post("/api/cart/remove", { book_id }, { withCredentials: true })
+  function handleRemove(book_id, type) {
+    axios.post("/api/cart/remove", { book_id, type }, { withCredentials: true })
       .then(res => fetchCart())
       .catch(err => alert("Error removing item"));
   }
 
-function handleDecrease(book_id) {
+function handleDecrease(book_id, type) {
   setProcessing(true);
-  axios.post("/api/cart/decrease", { book_id }, { withCredentials: true })
+  axios.post("/api/cart/decrease", { book_id, type }, { withCredentials: true })
     .then(res => {
       fetchCart();
       setProcessing(false);
@@ -43,10 +43,10 @@ function handleDecrease(book_id) {
 }
 
 
-function handleIncrease(book_id, currentAmount, maxCount) {
+function handleIncrease(book_id, currentAmount, maxCount, type) {
   if (currentAmount >= maxCount || processing) return; // don't allow more than stock, or double clicks
   setProcessing(true);
-  axios.post("/api/cart/add", { book_id, amount: 1 }, { withCredentials: true })
+  axios.post("/api/cart/add", { book_id, amount: 1, type }, { withCredentials: true })
     .then(res => {
       fetchCart();
       setProcessing(false);
@@ -73,23 +73,26 @@ function handleIncrease(book_id, currentAmount, maxCount) {
       onError={e => e.target.src = "https://via.placeholder.com/60x85?text=No+Image"}
     />
     <div className={classes["cart-item-details"]}>
-      <div className={classes["cart-item-title"]}>{item.title}</div>
+      <div className={classes["cart-item-title"]}>
+  {item.title}
+  <span className={classes["cart-item-type"]}>({item.type === "rent" ? "Rent" : "Buy"})</span>
+</div>
       <div className={classes["cart-item-meta"]}>
         <button
           className={classes["dec-btn"]}
           disabled={item.amount <= 1 || processing}
-           onClick={() => handleDecrease(item.book_id)}
+           onClick={() => handleDecrease(item.book_id, item.type)}
         >-</button>
         <span className={classes["cart-item-amount"]}>{item.amount}</span>
        <button
           className={classes["inc-btn"]}
-          onClick={() => handleIncrease(item.book_id, item.amount, item.count)}
+          onClick={() => handleIncrease(item.book_id, item.amount, item.count, item.type)}
           disabled={item.amount >= item.count || processing}
         >+</button>
         × ${item.price}
       </div>
       <button
-        onClick={() => handleRemove(item.book_id)}
+        onClick={() => handleRemove(item.book_id, item.type)}
         className={classes["remove-btn"]}
       >Remove</button>
     </div>
