@@ -72,4 +72,31 @@ router.get("/me", (req, res) => {
   res.json({ user_id: req.session.user_id });
 });
 
+// Get user profile info (for the popup)
+router.get("/info", (req, res) => {
+  const userId = req.session.user_id;
+  if (!userId) return res.status(401).json({ message: "Not logged in" });
+
+  const query = "SELECT phone_number, address FROM users WHERE user_id = ?";
+  db.query(query, [userId], (err, results) => {
+    if (err) return res.status(500).json({ message: "Server error" });
+    if (!results.length) return res.status(404).json({ message: "User not found" });
+    res.json(results[0]);
+  });
+});
+
+// Update phone/address for user (called once from popup)
+router.post("/complete-profile", (req, res) => {
+  const userId = req.session.user_id;
+  const { phone, address } = req.body;
+
+  if (!userId) return res.status(401).json({ message: "Not logged in" });
+  if (!phone || !address) return res.status(400).json({ message: "Missing phone or address" });
+
+  const query = "UPDATE users SET phone_number = ?, address = ? WHERE user_id = ?";
+  db.query(query, [phone, address, userId], (err) => {
+    if (err) return res.status(500).json({ message: "Update failed" });
+    res.json({ message: "Info updated successfully" });
+  });
+});
 module.exports = router;

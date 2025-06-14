@@ -1,0 +1,62 @@
+.popupContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background-color: white;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  padding: 24px;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.inputField {
+  width: 100%;
+  margin: 12px 0;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+
+.submitButton {
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s ease-in-out;
+}
+
+.submitButton:hover {
+  background-color: #357ac9;
+}
+.popupContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background-color: white;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  padding: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transform: translateX(100%);
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0%);
+  }
+}

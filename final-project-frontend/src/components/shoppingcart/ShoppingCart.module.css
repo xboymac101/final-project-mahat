@@ -69,3 +69,19 @@
   color: #222;
   font-weight: bold;
 }
+
+.payment-button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background-color: #00c853;
+  color: white;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.payment-button:hover {
+  background-color: #00b248;
+}
