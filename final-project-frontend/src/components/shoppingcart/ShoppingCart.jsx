@@ -4,8 +4,14 @@ import classes from './ShoppingCart.module.css';
 
 export default function ShoppingCart() {
   const [cart, setCart] = useState([]);
+const [processing, setProcessing] = useState(false);
+
 
   useEffect(() => {
+    fetchCart();
+  }, []);
+
+  function fetchCart() {
     axios
       .get("/api/cart", { withCredentials: true })
       .then((res) => setCart(res.data))
@@ -15,7 +21,41 @@ export default function ShoppingCart() {
           alert("Please log in to view your cart.");
         }
       });
-  }, []);
+  }
+
+  function handleRemove(book_id) {
+    axios.post("/api/cart/remove", { book_id }, { withCredentials: true })
+      .then(res => fetchCart())
+      .catch(err => alert("Error removing item"));
+  }
+
+function handleDecrease(book_id) {
+  setProcessing(true);
+  axios.post("/api/cart/decrease", { book_id }, { withCredentials: true })
+    .then(res => {
+      fetchCart();
+      setProcessing(false);
+    })
+    .catch(err => {
+      alert("Failed to update. " + (err.response?.data?.message || ""));
+      setProcessing(false);
+    });
+}
+
+
+function handleIncrease(book_id, currentAmount, maxCount) {
+  if (currentAmount >= maxCount || processing) return; // don't allow more than stock, or double clicks
+  setProcessing(true);
+  axios.post("/api/cart/add", { book_id, amount: 1 }, { withCredentials: true })
+    .then(res => {
+      fetchCart();
+      setProcessing(false);
+    })
+    .catch(err => {
+      alert("Error updating item: " + (err.response?.data?.message || ""));
+      setProcessing(false);
+    });
+}
 
   const total = cart.reduce((sum, item) => sum + item.price * item.amount, 0);
 
@@ -24,22 +64,37 @@ export default function ShoppingCart() {
       <h2>Your Cart</h2>
       {cart.length === 0 && <p>Cart is empty.</p>}
       <ul className={classes["cart-list"]}>
-        {cart.map((item) => (
-          <li key={item.id} className={classes["cart-item"]}>
-            <img
-              src={item.image || "https://via.placeholder.com/60x85?text=No+Image"}
-              alt={item.title}
-              className={classes["cart-item-img"]}
-              onError={e => e.target.src = "https://via.placeholder.com/60x85?text=No+Image"}
-            />
-            <div className={classes["cart-item-details"]}>
-              <div className={classes["cart-item-title"]}>{item.title}</div>
-              <div className={classes["cart-item-meta"]}>
-                ${item.price} × <span className={classes["cart-item-amount"]}>{item.amount}</span>
-              </div>
-            </div>
-          </li>
-        ))}
+   {cart.map((item) => (
+  <li key={item.book_id} className={classes["cart-item"]}>
+    <img
+      src={item.image || "https://via.placeholder.com/60x85?text=No+Image"}
+      alt={item.title}
+      className={classes["cart-item-img"]}
+      onError={e => e.target.src = "https://via.placeholder.com/60x85?text=No+Image"}
+    />
+    <div className={classes["cart-item-details"]}>
+      <div className={classes["cart-item-title"]}>{item.title}</div>
+      <div className={classes["cart-item-meta"]}>
+        <button
+          className={classes["dec-btn"]}
+          disabled={item.amount <= 1 || processing}
+           onClick={() => handleDecrease(item.book_id)}
+        >-</button>
+        <span className={classes["cart-item-amount"]}>{item.amount}</span>
+       <button
+          className={classes["inc-btn"]}
+          onClick={() => handleIncrease(item.book_id, item.amount, item.count)}
+          disabled={item.amount >= item.count || processing}
+        >+</button>
+        × ${item.price}
+      </div>
+      <button
+        onClick={() => handleRemove(item.book_id)}
+        className={classes["remove-btn"]}
+      >Remove</button>
+    </div>
+  </li>
+))}
       </ul>
       <h3 className={classes["cart-total"]}>Total: ${total.toFixed(2)}</h3>
     </div>

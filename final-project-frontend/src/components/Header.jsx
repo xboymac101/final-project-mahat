@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import logo from '../assets/img/Logo.png';
+import logo from '../assets/img/logo.png';
 import { FaShoppingCart } from 'react-icons/fa';
 function Header() {
   return (
