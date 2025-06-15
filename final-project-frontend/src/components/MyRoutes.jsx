@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import AboutPage from '../components/about/About';
-import Categories from '../components/categories/Categories';
-import Login from './login/Login';
-import HomePage from '../components/homepage/HomePage';
-import BookDetails from '../components/bookdetails/BookDetails';
-import Signup from './signup/Signup';
-import Rules from './rules/Rules';
+import AboutPage from '../pages/about/About';
+import Categories from '../pages/categories/Categories';
+import Login from '../pages/login/Login';
+import HomePage from '../pages/homepage/HomePage';
+import BookDetails from '../pages/bookdetails/BookDetails';
+import Signup from '../pages/signup/Signup';
+import Rules from '../pages/rules/Rules';
 import ProtectedRoute from '../components/protectedroute/ProtectedRoute'; 
-import ShoppingCart from '../components/shoppingcart/ShoppingCart';
+import ShoppingCart from '../pages/shoppingcart/ShoppingCart';
+import Orders from '../pages/orders/Orders'
 function MyRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <Routes>
-      <Route path='/' element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+      <Route path='/' element={<Login />} />
       <Route path='/Signup' element={<Signup />} />
       {/* Protected Routes */}
       <Route
         path='/books'
         element={
-          <ProtectedRoute isLoggedIn={isLoggedIn}>
+          <ProtectedRoute>
             <HomePage />
           </ProtectedRoute>
         }
@@ -28,7 +29,7 @@ function MyRoutes() {
       <Route
         path='/book/:id'
         element={
-          <ProtectedRoute isLoggedIn={isLoggedIn}>
+          <ProtectedRoute>
             <BookDetails />
           </ProtectedRoute>
         }
@@ -36,7 +37,7 @@ function MyRoutes() {
       <Route
         path="/categories"
         element={
-          <ProtectedRoute isLoggedIn={isLoggedIn}>
+          <ProtectedRoute>
             <Categories />
           </ProtectedRoute>
         }
@@ -44,7 +45,7 @@ function MyRoutes() {
       <Route
         path='/about'
         element={
-          <ProtectedRoute isLoggedIn={isLoggedIn}>
+          <ProtectedRoute>
             <AboutPage/>
           </ProtectedRoute>
         }
@@ -52,7 +53,7 @@ function MyRoutes() {
             <Route
         path='/shoppingcart'
         element={
-          <ProtectedRoute isLoggedIn={isLoggedIn}>
+          <ProtectedRoute>
             <ShoppingCart />
           </ProtectedRoute>
         }
@@ -60,11 +61,19 @@ function MyRoutes() {
       <Route
         path='/rules'
         element={
-          <ProtectedRoute isLoggedIn={isLoggedIn}>
+          <ProtectedRoute>
             <Rules />
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin/orders"
+        element={
+          <ProtectedRoute requireAdmin={true}>
+            <Orders />
+          </ProtectedRoute>
+        }
+/>
     </Routes>
   );
 }

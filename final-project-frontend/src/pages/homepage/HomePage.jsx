@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import BookWheel from '../bookwheel/BookWheel';
+import BookWheel from '../../components/bookwheel/BookWheel';
 import styles from './HomePage.module.css';
 
 function BooksHome() {

@@ -49,6 +49,8 @@ router.post("/login", (req, res) => {
       }
       if (isMatch) {
         req.session.user_id = results[0].user_id;
+        req.session.role = results[0].role; // ✅ ADD THIS
+
         res.status(200).json({
           message: "Login successful",
           user: {
@@ -58,18 +60,23 @@ router.post("/login", (req, res) => {
             role: results[0].role,
           },
         });
-      } else {
+      } 
+      else {
         res.status(401).json({ message: "Invalid email or password" });
       }
     });
   });
 });
 
-router.get("/me", (req, res) => {
+router.get('/me', (req, res) => {
+
   if (!req.session.user_id) {
-    return res.status(401).json({ message: "Not logged in" });
+    return res.status(401).json({ message: 'Not logged in' });
   }
-  res.json({ user_id: req.session.user_id });
+  res.json({
+    user_id: req.session.user_id,
+    role: req.session.role
+  });
 });
 
 // Get user profile info (for the popup)
@@ -99,4 +106,6 @@ router.post("/complete-profile", (req, res) => {
     res.json({ message: "Info updated successfully" });
   });
 });
+
+
 module.exports = router;

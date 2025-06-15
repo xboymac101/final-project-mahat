@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import classes from "./BookDetails.module.css";
-import Reviews from "../reviews/Reviews";
-import RelatedProducts from "../relatedproducts/RelatedProducts";
-import axios from "axios";import QuantityPicker from "./QuantityPicker"; 
+import Reviews from "../../components/reviews/Reviews";
+import RelatedProducts from "../../components/relatedproducts/RelatedProducts";
+import axios from "axios";
+import QuantityPicker from "../../components/quantitypicker/QuantityPicker"; 
 
 function BookDetails() {
   const { id } = useParams();

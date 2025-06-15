@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import classes from './ShoppingCart.module.css';
-import UserDetailsPopup from "../userdetailspopup/UserDetailsPopup"
+import UserDetailsPopup from "../../components/userdetailspopup/UserDetailsPopup"
 export default function ShoppingCart() {
   const [cart, setCart] = useState([]);
   const [processing, setProcessing] = useState(false);
@@ -88,9 +88,6 @@ function handleProceedToPayment() {
       console.error(err);
     });
 }
-
-
-
 
 
 

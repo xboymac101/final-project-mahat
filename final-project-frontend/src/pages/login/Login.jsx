@@ -3,43 +3,50 @@ import { useNavigate } from "react-router-dom";
 import logo from '../../assets/img/logo.png';
 import axios from "axios";
 import classes from "./login.module.css";
-export default function Login({setIsLoggedIn}) {
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [error, setError] = useState("");
-const navigate = useNavigate();
 
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-const handleLogin = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     checkLogin();
   };
 
-  function checkLogin() {
-    axios.post('/api/auth/login', {
-        email,
-        password
-      }, { withCredentials: true }) 
-      .then((res) => {
-        console.log("Login response:", res);
-        setError(res.data.message);
-        setIsLoggedIn(true);
-        navigate('/books');
-      })
-      .catch((err) => {
-        console.log("Login error:", err);
-       setError(err.response.data.message);
-      });
-    
-  }
+function checkLogin() {
+  axios.post('/api/auth/login', {
+    email,
+    password
+  }, { withCredentials: true })
+    .then((res) => {
+      console.log("Login response:", res);
 
+      // ✅ Use a short delay before redirecting
+      setTimeout(() => {
+        const role = res.data.user?.role;
+        if (role === "Admin") {
+          navigate("/admin/orders");
+        } else {
+          navigate("/books");
+        }
+      }, 300); // 300ms delay helps browser fully register the session cookie
+    })
+    .catch((err) => {
+      console.error("Login error:", err);
+      const message =
+        err.response?.data?.message || "Login failed. Please try again.";
+      setError(message);
+    });
+}
   return (
     <div className={classes.loginContainer}>
       <h2 className={classes.loginTitle}>Login</h2>
-      <img src= {logo} alt="logo" className={classes.loginLogo} />
+      <img src={logo} alt="logo" className={classes.loginLogo} />
 
       <form onSubmit={handleLogin}>
-        <label> Email</label>
+        <label>Email</label>
         <input
           type="email"
           placeholder="Enter Email"
