@@ -10,6 +10,9 @@ import Rules from '../pages/rules/Rules';
 import ProtectedRoute from '../components/protectedroute/ProtectedRoute'; 
 import ShoppingCart from '../pages/shoppingcart/ShoppingCart';
 import Orders from '../pages/orders/Orders'
+import Stats from '../pages/stats/Stats'
+import OrderHistory from '../pages/orderhistory/OrderHistory';
+import ThankYou from '../pages/thankyou/ThankYou';
 function MyRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -42,6 +45,22 @@ function MyRoutes() {
           </ProtectedRoute>
         }
       />
+       <Route
+        path='/my-orders'
+        element={
+          <ProtectedRoute>
+            <OrderHistory />
+          </ProtectedRoute>
+        }
+      />
+        <Route
+        path='/thank-you'
+        element={
+          <ProtectedRoute>
+            <ThankYou />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path='/about'
         element={
@@ -71,6 +90,14 @@ function MyRoutes() {
         element={
           <ProtectedRoute requireAdmin={true}>
             <Orders />
+          </ProtectedRoute>
+        }
+/>
+      <Route
+        path="/admin/stats"
+        element={
+          <ProtectedRoute requireAdmin={true}>
+            <Stats />
           </ProtectedRoute>
         }
 />

@@ -7,6 +7,9 @@ const cartRoutes = require('./routes/cart');
 const session = require('express-session'); 
 const booksRoutes = require("./routes/books");
 const adminRoutes = require('./routes/adminroutes');
+const adminStatsRoutes = require('./routes/adminstats');
+const createOrderRoute = require("./routes/createorder");
+const orderHistoryRoutes = require("./routes/orderhistory");
 
 
 app.use(cors({
@@ -30,6 +33,12 @@ app.use('/api/books', booksRoutes);
 app.use("/api/auth", authRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin', adminStatsRoutes);
+app.use("/api/order", createOrderRoute);
+app.use("/api/order", orderHistoryRoutes);
+
+
+
 
 app.use((err, req, res, next) => {
   console.error(err); // Log error

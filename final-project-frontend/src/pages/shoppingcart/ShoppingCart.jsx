@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import classes from './ShoppingCart.module.css';
 import UserDetailsPopup from "../../components/userdetailspopup/UserDetailsPopup"
+import PayPalButton from "../../components/paypal/PayPalButton"
 export default function ShoppingCart() {
   const [cart, setCart] = useState([]);
   const [processing, setProcessing] = useState(false);
@@ -155,12 +156,17 @@ function handleProceedToPayment() {
       </ul>
 
       <h3 className={classes["cart-total"]}>Total: ${total.toFixed(2)}</h3>
-      <button
-  className={classes["payment-button"]}
-  onClick={handleProceedToPayment}
->
-  Proceed to Payment
-</button>
+      {total > 0 && (
+  <>
+    {showPopup ? (
+      <UserDetailsPopup onComplete={() => setShowPopup(false)} />
+    ) : (
+      <div className={classes["paypal-wrapper"]}>
+        <PayPalButton amount={total} cart={cart} setCart={setCart} />
+      </div>
+    )}
+  </>
+)}
     </div>
   );
 }

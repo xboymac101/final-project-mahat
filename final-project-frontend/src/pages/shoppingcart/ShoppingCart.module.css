@@ -85,3 +85,8 @@
 .payment-button:hover {
   background-color: #00b248;
 }
+
+.paypal-wrapper {
+  margin-top: 20px;
+  max-width: 400px;
+}

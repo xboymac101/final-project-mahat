@@ -1,52 +1,37 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "./Stats.module.css";
+import styles from "./stats.module.css";
 
 export default function Stats() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    axios.get("/api/admin/stats", { withCredentials: true })
-      .then(res => setStats(res.data))
-      .catch(err => {
+    axios.get("/api/admin/stats")
+      .then((res) => setStats(res.data))
+      .catch((err) => {
         console.error(err);
         setError("Failed to load statistics.");
       });
   }, []);
 
-  if (error) return <div className={styles.container}><p className={styles.error}>{error}</p></div>;
-  if (!stats) return <div className={styles.container}><p>Loading...</p></div>;
+  if (error) return <p>{error}</p>;
+  if (!stats) return <p>Loading...</p>;
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>📊 Site Statistics</h1>
-
-      <div className={styles.statGrid}>
-        <div className={styles.statCard}>
-          <h3>Total Orders</h3>
-          <p>{stats.totalOrders}</p>
-        </div>
-        <div className={styles.statCard}>
+    <div className={styles.statsPage}>
+      <h1>📊 Admin Statistics</h1>
+      <div className={styles.statsGrid}>
+        <div className={styles.card}><h3>Total Orders</h3><p>{stats.totalOrders}</p></div>
+        <div className={styles.card}><h3>Completed Orders</h3><p>{stats.completedOrders}</p></div>
+        <div className={styles.card}><h3>Canceled Orders</h3><p>{stats.canceledOrders}</p></div>
+        <div className={styles.card}>
           <h3>Total Revenue</h3>
-          <p>${stats.totalRevenue}</p>
+          <p>${stats.revenue ? stats.revenue.toFixed(2) : "0.00"}</p>
         </div>
-        <div className={styles.statCard}>
-          <h3>Total Users</h3>
-          <p>{stats.totalUsers}</p>
-        </div>
-        <div className={styles.statCard}>
-          <h3>Books in Stock</h3>
-          <p>{stats.totalBooks}</p>
-        </div>
+        <div className={styles.card}><h3>Top Book</h3><p>{stats.topBook?.title || 'N/A'}</p></div>
+        <div className={styles.card}><h3>Top Customer</h3><p>{stats.topCustomer?.name || 'N/A'}</p></div>
       </div>
-
-      <h2 className={styles.subTitle}>🔥 Top 5 Books</h2>
-      <ul className={styles.bookList}>
-        {stats.topBooks.map((book, index) => (
-          <li key={index}>{index + 1}. {book.title} — {book.sales} sales</li>
-        ))}
-      </ul>
     </div>
   );
 }
