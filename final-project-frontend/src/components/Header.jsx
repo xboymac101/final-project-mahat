@@ -12,16 +12,22 @@ function Header() {
   const navigate = useNavigate();
 
 useEffect(() => {
-  axios.get('/api/auth/me', { withCredentials: true })
-    .then(res => {
-      setRole(res.data.role);
-    })
-    .catch(() => {
-      setRole(null);
-    })
-    .finally(() => {
-      setLoading(false);
-    });
+  const fetchUser = () => {
+    axios.get('/api/auth/me', { withCredentials: true })
+      .then(res => {
+        setRole(res.data.role);
+        setLoading(false);
+      })
+      .catch(() => {
+        setRole(null);
+        setLoading(false);
+      });
+  };
+
+  // Short delay to allow session cookie to be registered
+  const timeoutId = setTimeout(fetchUser, 50);
+
+  return () => clearTimeout(timeoutId);
 }, []);
 
   const handleAdminSelect = (path) => {

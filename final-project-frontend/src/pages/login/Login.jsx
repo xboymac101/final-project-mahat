@@ -21,17 +21,15 @@ function checkLogin() {
     password
   }, { withCredentials: true })
     .then((res) => {
-      console.log("Login response:", res);
 
-      // ✅ Use a short delay before redirecting
       setTimeout(() => {
         const role = res.data.user?.role;
         if (role === "Admin") {
-          navigate("/admin/orders");
-        } else {
-          navigate("/books");
-        }
-      }, 300); // 300ms delay helps browser fully register the session cookie
+  window.location.href = "/admin/orders"; 
+} else {
+  window.location.href = "/books";        
+}
+      }); 
     })
     .catch((err) => {
       console.error("Login error:", err);

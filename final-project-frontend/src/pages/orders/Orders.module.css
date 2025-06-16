@@ -2,36 +2,156 @@
   max-width: 900px;
   margin: 40px auto;
   padding: 20px;
-  background-color: #f8f9fb;
+  background-color: #f7f7fa;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .title {
   font-size: 2rem;
+  text-align: center;
   margin-bottom: 20px;
   color: #333;
 }
 
 .error {
   color: red;
-  margin-bottom: 15px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .empty {
-  font-style: italic;
-  color: #666;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.searchInput,
+.selectInput {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 220px;
+}
+
+.resetButton {
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #999;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.resetButton:hover {
+  background-color: #777;
 }
 
 .list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .orderItem {
-  padding: 15px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
   margin-bottom: 16px;
-  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.orderItem > div {
+  margin-bottom: 8px;
+}
+
+.inlineFields {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.inlineFields select,
+.inlineFields input[type="date"] {
+  padding: 5px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.buttonGroup {
+  margin-top: 12px;
+}
+
+.editButton,
+.saveButton {
+  padding: 8px 16px;
+  border: none;
   border-radius: 8px;
-  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin-top: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.editButton {
+  background-color: #4f86f7;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #336ee1;
+}
+
+.saveButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: #1e9239;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #eee;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #ccc;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
