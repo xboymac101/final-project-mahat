@@ -10,7 +10,6 @@ export default function Orders() {
   const [editedDueDate, setEditedDueDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -34,10 +33,35 @@ export default function Orders() {
         setError("Failed to load orders.");
       });
   }
+
   useEffect(() => {
     fetchOrders(currentPage);
     // eslint-disable-next-line
   }, [currentPage]);
+
+  function groupOrdersById(flatOrders) {
+    const grouped = {};
+    for (const item of flatOrders) {
+      if (!grouped[item.order_id]) {
+        grouped[item.order_id] = {
+          order_id: item.order_id,
+          status: item.status,
+          customer_name: item.customer_name,
+          email: item.email,
+          phone_number: item.phone_number,
+          extensions_used: item.extensions_used || 0,
+          items: []
+        };
+      }
+      grouped[item.order_id].items.push({
+        title: item.book_title,
+        type: item.type,
+        quantity: item.quantity,
+        due_date: item.due_date
+      });
+    }
+    return Object.values(grouped);
+  }
 
   function handleSave(orderId) {
     axios
@@ -57,27 +81,28 @@ export default function Orders() {
       })
       .catch((err) => {
         console.error("Failed to update order:", err);
+        alert(err?.response?.data?.message || "Update failed");
       });
   }
 
   function handleFilterChange() {
-  setCurrentPage(1);
-  fetchOrders(1);
+    setCurrentPage(1);
+    fetchOrders(1);
   }
-
 
   function resetFilters() {
-  setSearchTerm("");
-  setStatusFilter("");
-  setCurrentPage(1);
-  fetchOrders(1, "", "");
+    setSearchTerm("");
+    setStatusFilter("");
+    setCurrentPage(1);
+    fetchOrders(1, "", "");
   }
+
+  const groupedOrders = groupOrdersById(orders);
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>📦 Orders</h1>
 
-      {/* 🔍 Filters */}
       <div className={styles.filters}>
         <input
           type="text"
@@ -93,7 +118,7 @@ export default function Orders() {
             const value = e.target.value;
             setStatusFilter(value);
             setCurrentPage(1);
-            fetchOrders(1, searchTerm, value); 
+            fetchOrders(1, searchTerm, value);
           }}
           className={styles.selectInput}
         >
@@ -110,18 +135,37 @@ export default function Orders() {
 
       {error && <p className={styles.error}>{error}</p>}
 
-      {orders.length === 0 ? (
+      {groupedOrders.length === 0 ? (
         <p className={styles.empty}>No orders found.</p>
       ) : (
         <ul className={styles.list}>
-          {orders.map((order) => (
+          {groupedOrders.map((order) => (
             <li key={order.order_id} className={styles.orderItem}>
               <div><strong>Order ID:</strong> {order.order_id}</div>
               <div><strong>Customer:</strong> {order.customer_name}</div>
               <div><strong>Email:</strong> {order.email}</div>
               <div><strong>Phone:</strong> {order.phone_number}</div>
-              <div><strong>Book:</strong> {order.book_title}</div>
-              <div><strong>Type:</strong> {order.type}</div>
+
+              <table className={styles.itemTable}>
+                <thead>
+                  <tr>
+                    <th>Book</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Due Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {order.items.map((item, idx) => (
+                    <tr key={idx}>
+                      <td>{item.title}</td>
+                      <td>{item.type}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.due_date?.slice(0, 10) || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
               <div className={styles.inlineFields}>
                 <div>
@@ -150,10 +194,16 @@ export default function Orders() {
                       onChange={(e) => setEditedDueDate(e.target.value)}
                     />
                   ) : (
-                    order.due_date?.slice(0, 10)
+                    order.items.find(i => i.due_date)?.due_date?.slice(0, 10) || "-"
                   )}
                 </div>
               </div>
+
+              {order.extensions_used >= 2 && (
+                <div className={styles.extensionWarning}>
+                  <em>⚠️ This rental has reached the maximum of 2 extensions.</em>
+                </div>
+              )}
 
               <div className={styles.buttonGroup}>
                 {editingOrderId === order.order_id ? (
@@ -168,7 +218,7 @@ export default function Orders() {
                     onClick={() => {
                       setEditingOrderId(order.order_id);
                       setEditedStatus(order.status);
-                      setEditedDueDate(order.due_date?.slice(0, 10) || "");
+                      setEditedDueDate(order.items.find(i => i.due_date)?.due_date?.slice(0, 10) || "");
                     }}
                     className={styles.editButton}
                   >

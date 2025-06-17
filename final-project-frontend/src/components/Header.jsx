@@ -74,11 +74,13 @@ function Header() {
                 </li>
               )}
 
-              <li>
-                <NavLink to='/shoppingcart' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>
-                  <FaShoppingCart size={22} />
-                </NavLink>
-              </li>
+              {!loading && role !== 'Admin' && (
+                <li>
+                  <NavLink to='/shoppingcart' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>
+                    <FaShoppingCart size={22} />
+                  </NavLink>
+                </li>
+              )}
 
               {!loading && role === 'Admin' && (
                 <li className={styles.adminIcon}>

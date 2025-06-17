@@ -14,9 +14,14 @@ function BookDetails() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(0); 
   const [type, setType] = useState("buy");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+
+    axios.get('/api/auth/me', { withCredentials: true })
+      .then(res => setIsAdmin(res.data.role === 'Admin'))
+      .catch(() => setIsAdmin(false));
 
     fetch(`http://localhost:8801/api/books/${id}`)
       .then((res) => res.json())
@@ -33,18 +38,53 @@ function BookDetails() {
         setLoading(false);
       });
   }, [id]);
+
 const handleAddToCart = () => {
+  if (isAdmin) {
+    alert("Admins are not allowed to add items to the cart.");
+    return;
+  }
+
   if (!book || !book.book_id) {
     alert("Book details not loaded.");
     return;
   }
+
   if (!quantity || quantity < 1) {
     alert("Please select quantity.");
     return;
   }
+
+  if (type === "rent") {
+    axios.get("/api/cart", { withCredentials: true })
+      .then(res => {
+        const rentalTotal = res.data
+          .filter(item => item.type === "rent")
+          .reduce((sum, item) => sum + item.amount, 0);
+
+        const MAX_RENTALS = 5;
+        const totalAfterAdd = rentalTotal + quantity;
+
+        if (totalAfterAdd > MAX_RENTALS) {
+          alert(`You can only rent up to ${MAX_RENTALS} books. You currently have ${rentalTotal} in your cart.`);
+          return;
+        }
+
+        proceedAdd(); // proceed with actual add
+      })
+      .catch(() => {
+        alert("Failed to check your cart. Please try again.");
+      });
+  } else {
+    proceedAdd(); // for buy type
+  }
+};
+
+// actual add-to-cart POST logic
+function proceedAdd() {
   axios.post(
     "/api/cart/add",
-    { book_id: book.book_id, amount: quantity, type },  // <-- include type!
+    { book_id: book.book_id, amount: quantity, type },
     { withCredentials: true }
   )
     .then((res) => {
@@ -53,21 +93,20 @@ const handleAddToCart = () => {
     .catch((err) => {
       if (err.response && err.response.status === 401) {
         alert("Please log in to add items to your cart.");
-      } else if (err.response && err.response.data && err.response.data.message) {
+      } else if (err.response?.data?.message) {
         alert(err.response.data.message);
       } else {
         alert("Failed to add to cart.");
       }
       console.error(err);
     });
-};
+}
 
   if (loading) return <div>Loading...</div>;
   if (!book) return <div>Book not found.</div>;
 
   return (
     <div className={classes.page}>
-      {/* Top Section */}
       <div className={classes.topSection}>
         <img src={book.img} alt={book.title} className={classes.cover} />
         <div className={classes.info}>
@@ -78,7 +117,6 @@ const handleAddToCart = () => {
           <div className={classes.desc}>{book.description}</div>
           <div className={classes.price}><b>Price:</b> ${book.price}</div>
 
-          {/* ✅ Quantity Picker */}
           {book.count > 0 ? (
             <div style={{ margin: "15px 0" }}>
               <QuantityPicker
@@ -89,18 +127,19 @@ const handleAddToCart = () => {
           ) : (
             <div style={{ color: "red", margin: "10px 0" }}>Out of stock</div>
           )}
+
           <div style={{ margin: "10px 0" }}>
-           <label>
-           <input
-              type="radio"
-              value="buy"
-              checked={type === "buy"}
-              onChange={() => setType("buy")}
-              style={{ marginRight: 5 }}
-            />
-            Buy
-          </label>
-          <label style={{ marginLeft: 15 }}>
+            <label>
+              <input
+                type="radio"
+                value="buy"
+                checked={type === "buy"}
+                onChange={() => setType("buy")}
+                style={{ marginRight: 5 }}
+              />
+              Buy
+            </label>
+            <label style={{ marginLeft: 15 }}>
             <input
               type="radio"
               value="rent"
@@ -110,15 +149,16 @@ const handleAddToCart = () => {
             />
             Rent
           </label>
-        </div>
+          </div>
+
           <div className={classes.buttonRow}>
-          <button
-          className={classes.actionButton}
-          onClick={handleAddToCart}
-          disabled={quantity < 1 || quantity > book.count}>
-           Add To Cart
-          </button>
-            <button className={classes.actionButton}>Rent</button>
+            <button
+              className={classes.actionButton}
+              onClick={handleAddToCart}
+              disabled={quantity < 1 || quantity > book.count}
+            >
+              Add To Cart
+            </button>
           </div>
         </div>
       </div>

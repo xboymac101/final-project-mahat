@@ -27,7 +27,7 @@ export default function Stats() {
         <div className={styles.card}><h3>Canceled Orders</h3><p>{stats.canceledOrders}</p></div>
         <div className={styles.card}>
           <h3>Total Revenue</h3>
-          <p>${stats.revenue ? stats.revenue.toFixed(2) : "0.00"}</p>
+          <p>${Number(stats.revenue || 0).toFixed(2)}</p>
         </div>
         <div className={styles.card}><h3>Top Book</h3><p>{stats.topBook?.title || 'N/A'}</p></div>
         <div className={styles.card}><h3>Top Customer</h3><p>{stats.topCustomer?.name || 'N/A'}</p></div>

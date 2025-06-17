@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { isAuthenticated, isAdmin } = require('./adminauth');
-const dbSingleton = require('../dbSingleton');
-const db = dbSingleton.getConnection();
 
-router.get('/orders', isAuthenticated, isAdmin, (req, res) => {
-  const db = require('../dbSingleton').getConnection();
+router.get('/orders', isAuthenticated, isAdmin, async (req, res) => {
+  const db = require('../dbSingleton').getConnection().promise();
 
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
@@ -13,7 +11,6 @@ router.get('/orders', isAuthenticated, isAdmin, (req, res) => {
   const search = req.query.search || "";
   const status = req.query.status || "";
 
-  // WHERE clause
   const whereClauses = [];
   const params = [];
 
@@ -29,54 +26,106 @@ router.get('/orders', isAuthenticated, isAdmin, (req, res) => {
 
   const whereSQL = whereClauses.length ? "WHERE " + whereClauses.join(" AND ") : "";
 
-  const dataQuery = `
-    SELECT 
-      o.order_id, o.status, o.due_date, o.type,
-      u.name AS customer_name, u.email, u.phone_number,
-      b.title AS book_title
-    FROM \`order\` o
-    JOIN users u ON o.user_id = u.user_id
-    JOIN book b ON o.book_id = b.book_id
-    ${whereSQL}
-    LIMIT ? OFFSET ?
-  `;
-
-  const countQuery = `
-    SELECT COUNT(*) AS total
-    FROM \`order\` o
-    JOIN users u ON o.user_id = u.user_id
-    ${whereSQL}
-  `;
-
-  db.query(countQuery, params, (countErr, countResult) => {
-    if (countErr) return res.status(500).json({ message: "Failed to count orders" });
+  try {
+    const [countResult] = await db.query(
+      `SELECT COUNT(*) AS total
+       FROM \`order\` o
+       JOIN users u ON o.user_id = u.user_id
+       JOIN order_items oi ON o.order_id = oi.order_id
+       JOIN book b ON oi.book_id = b.book_id
+       ${whereSQL}`,
+      params
+    );
 
     const totalPages = Math.ceil(countResult[0].total / limit);
 
-    db.query(dataQuery, [...params, limit, offset], (err, results) => {
-      if (err) return res.status(500).json({ message: "Failed to fetch orders" });
+    const [results] = await db.query(
+      `SELECT 
+         o.order_id,
+         o.status,
+         o.extensions_used,
+         oi.due_date,
+         u.name AS customer_name,
+         u.email,
+         u.phone_number,
+         oi.type,
+         oi.quantity,
+         b.title AS book_title
+       FROM \`order\` o
+       JOIN users u ON o.user_id = u.user_id
+       JOIN order_items oi ON o.order_id = oi.order_id
+       JOIN book b ON oi.book_id = b.book_id
+       ${whereSQL}
+       LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
+    );
 
-      res.json({ orders: results, totalPages });
-    });
-  });
+    res.json({ orders: results, totalPages });
+  } catch (err) {
+    console.error("Admin orders fetch error:", err);
+    res.status(500).json({ message: "Failed to fetch orders", error: err });
+  }
 });
 
-
-
-router.put('/orders/:id', isAuthenticated, isAdmin, (req, res) => {
+router.put('/orders/:id', isAuthenticated, isAdmin, async (req, res) => {
+  const db = require('../dbSingleton').getConnection().promise();
   const orderId = req.params.id;
-  const { status } = req.body;
+  const { status, due_date } = req.body;
 
-  const query = `
-    UPDATE \`order\` SET status = ? WHERE order_id = ?
-  `;
-  db.query(query, [status, orderId], (err) => {
-    if (err) {
-      console.error("Update error:", err);
-      return res.status(500).json({ message: "Failed to update order" });
+  try {
+    // Fetch current due_date from order_items and extensions_used from order
+    const [[{ due_date: currentDue } = {}] = []] = await db.query(
+      `SELECT due_date FROM order_items WHERE order_id = ? AND type = 'rent'`,
+      [orderId]
+    );
+
+    const [[{ extensions_used } = {}] = []] = await db.query(
+      `SELECT extensions_used FROM \`order\` WHERE order_id = ?`,
+      [orderId]
+    );
+
+    if (!currentDue && extensions_used === undefined) {
+      return res.status(404).json({ message: "Order not found." });
     }
-    res.json({ message: "Order updated" });
-  });
+
+    const oldDue = new Date(currentDue);
+    const newDue = new Date(due_date);
+    const now = new Date();
+
+    const isExtension = newDue > oldDue;
+    const isOverdue = oldDue < now;
+    const exceedsMaxPeriod = (newDue - oldDue) / (1000 * 60 * 60 * 24) > 30;
+
+    if (isExtension && isOverdue) {
+      return res.status(400).json({ message: "Cannot extend: rental is already overdue." }); // #11
+    }
+
+    if (isExtension && extensions_used >= 2) {
+      return res.status(400).json({ message: "Maximum of 2 extensions reached." }); // #14
+    }
+
+    if (isExtension && exceedsMaxPeriod) {
+      return res.status(400).json({ message: "Cannot extend beyond 30 days from original date." }); // #13
+    }
+
+    // Apply changes
+    await db.query(
+      `UPDATE \`order\` SET status = ?, extensions_used = extensions_used + ? WHERE order_id = ?`,
+      [status, isExtension ? 1 : 0, orderId]
+    );
+
+    if (isExtension) {
+      await db.query(
+        `UPDATE order_items SET due_date = ? WHERE order_id = ? AND type = 'rent'`,
+        [due_date, orderId]
+      );
+    }
+
+    res.json({ message: "Order updated successfully." });
+  } catch (err) {
+    console.error("Admin order update error:", err);
+    res.status(500).json({ message: "Failed to update order", error: err });
+  }
 });
 
 module.exports = router;

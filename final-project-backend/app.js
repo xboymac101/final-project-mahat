@@ -10,7 +10,7 @@ const adminRoutes = require('./routes/adminroutes');
 const adminStatsRoutes = require('./routes/adminstats');
 const createOrderRoute = require("./routes/createorder");
 const orderHistoryRoutes = require("./routes/orderhistory");
-
+const RulesRoutes = require("./routes/rules")
 
 app.use(cors({
   origin: 'http://localhost:3000',  
@@ -36,7 +36,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/admin', adminStatsRoutes);
 app.use("/api/order", createOrderRoute);
 app.use("/api/order", orderHistoryRoutes);
-
+app.use('/api/rules', RulesRoutes);
 
 
 

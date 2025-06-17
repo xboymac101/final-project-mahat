@@ -49,7 +49,7 @@ router.post("/login", (req, res) => {
       }
       if (isMatch) {
         req.session.user_id = results[0].user_id;
-        req.session.role = results[0].role; // ✅ ADD THIS
+        req.session.role = results[0].role;
 
         res.status(200).json({
           message: "Login successful",
