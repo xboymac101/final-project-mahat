@@ -3,22 +3,22 @@ const router = express.Router();
 const dbSingleton = require('../dbSingleton');
 const db = dbSingleton.getConnection();
 
-// Middleware to block Admins
-function blockAdmins(req, res, next) {
+// Middleware to block Admins and Staff
+function blockNonRegularUsers(req, res, next) {
   const user_id = req.session.user_id;
   if (!user_id) return res.status(401).json({ message: 'Not logged in' });
 
   db.query('SELECT role FROM users WHERE user_id = ?', [user_id], (err, rows) => {
     if (err) return res.status(500).json({ message: 'Server error' });
-    if (rows[0]?.role === 'Admin') {
-      return res.status(403).json({ message: 'Admins are not allowed to perform this action.' });
+    if (rows[0]?.role !== 'Regular') {
+      return res.status(403).json({ message: 'Only regular users can perform this action.' });
     }
     next();
   });
 }
 
 // Add to cart
-router.post('/add', blockAdmins, (req, res) => {
+router.post('/add', blockNonRegularUsers, (req, res) => {
   const user_id = req.session.user_id;
   const { book_id, amount, type } = req.body;
 
@@ -120,7 +120,7 @@ router.get('/', (req, res) => {
 });
 
 // Remove entire book from cart
-router.post('/remove', blockAdmins, (req, res) => {
+router.post('/remove', blockNonRegularUsers, (req, res) => {
   const user_id = req.session.user_id;
   const { book_id, type } = req.body;
   if (!book_id || !type) return res.status(400).json({ message: 'Book and type required.' });
@@ -136,7 +136,7 @@ router.post('/remove', blockAdmins, (req, res) => {
 });
 
 // Decrease amount by 1, remove if zero
-router.post('/decrease', blockAdmins, (req, res) => {
+router.post('/decrease', blockNonRegularUsers, (req, res) => {
   const user_id = req.session.user_id;
   const { book_id, type } = req.body;
   if (!book_id || !type) return res.status(400).json({ message: 'Book and type required.' });
@@ -172,7 +172,7 @@ router.post('/decrease', blockAdmins, (req, res) => {
   );
 });
 
-router.post('/update', blockAdmins, (req, res) => {
+router.post('/update', blockNonRegularUsers, (req, res) => {
   const user_id = req.session.user_id;
   const { book_id, amount, type } = req.body;
   if (!book_id || !amount || amount < 1) return res.status(400).json({ message: 'Book and valid amount required.' });

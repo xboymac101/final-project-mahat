@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/img/logo.png';
-import { FaShoppingCart, FaHammer } from 'react-icons/fa';
+import { FaShoppingCart, FaHammer, FaCog } from 'react-icons/fa'; 
 import axios from 'axios';
 import styles from './header.module.css';
 
@@ -9,6 +9,8 @@ function Header() {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAdminMenu, setShowAdminMenu] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false); 
+  const isStaff = role === 'Staff';
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +35,15 @@ function Header() {
     navigate(path);
   };
 
+  const handleLogout = () => {
+    axios.post('/api/auth/logout', {}, { withCredentials: true })
+      .then(() => {
+        setRole(null);
+        navigate('/');
+      })
+      .catch(() => alert("Logout failed."));
+  };
+
   return (
     <header>
       <div className='container'>
@@ -45,44 +56,25 @@ function Header() {
           </div>
           <nav>
             <ul className='menu'>
-              <li>
-                <NavLink to='/books' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'} end>
-                  Home
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to='/about' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>
-                  About
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to='/categories' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>
-                  Categories
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to='/rules' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>
-                  Rules
-                </NavLink>
-              </li>
+              <li><NavLink to='/books' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'} end>Home</NavLink></li>
+              <li><NavLink to='/about' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>About</NavLink></li>
+              <li><NavLink to='/categories' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>Categories</NavLink></li>
+              <li><NavLink to='/rules' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>Rules</NavLink></li>
 
-              {!loading && role !== 'Admin' && (
-                <li>
-                  <NavLink to='/my-orders' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>
-                    My Orders
-                  </NavLink>
-                </li>
+              {!loading && role === 'Regular' && (
+                <>
+                  <li>
+                    <NavLink to='/my-orders' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>My Orders</NavLink>
+                  </li>
+                  <li>
+                    <NavLink to='/shoppingcart' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>
+                      <FaShoppingCart size={22} />
+                    </NavLink>
+                  </li>
+                </>
               )}
 
-              {!loading && role !== 'Admin' && (
-                <li>
-                  <NavLink to='/shoppingcart' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>
-                    <FaShoppingCart size={22} />
-                  </NavLink>
-                </li>
-              )}
-
-              {!loading && role === 'Admin' && (
+              {!loading && (role === 'Admin' || role === 'Staff') && (
                 <li className={styles.adminIcon}>
                   <FaHammer
                     size={20}
@@ -92,7 +84,26 @@ function Header() {
                   {showAdminMenu && (
                     <div className={styles.adminDropdown}>
                       <button onClick={() => handleAdminSelect('/admin/orders')}>📦 Orders</button>
-                      <button onClick={() => handleAdminSelect('/admin/stats')}>📊 Statistics</button>
+                      {role === 'Admin' && (
+                        <button onClick={() => handleAdminSelect('/admin/stats')}>📊 Statistics</button>
+                      )}
+                    </div>
+                  )}
+                </li>
+              )}
+
+              {/* 🔄 Gear icon menu for everyone (user, staff, admin) */}
+              {!loading && (
+                <li className={styles.userIcon}>
+                  <FaCog
+                    size={20}
+                    className={styles.gear}
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                  />
+                  {showUserMenu && (
+                    <div className={styles.userDropdown}>
+                      <button onClick={() => navigate('/edit-profile')}>🛠 Edit Profile</button>
+                      <button onClick={handleLogout}>🚪 Logout</button>
                     </div>
                   )}
                 </li>

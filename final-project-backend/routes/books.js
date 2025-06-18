@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dbSingleton = require('../dbSingleton');
 const db = dbSingleton.getConnection();
+const { isAdminOrStaff } = require('./auth'); // Add this line
 
 // GET all books
 router.get('/', (req, res) => {
@@ -28,6 +29,24 @@ router.get('/:id', (req, res) => {
       return res.status(404).json({ error: 'Book not found' });
     }
     res.json(results[0]);
+  });
+});
+
+// PUT update book (staff/admin only)
+router.put('/:id', isAdminOrStaff, (req, res) => {
+  const bookId = req.params.id;
+  const { title, author, price, count } = req.body;
+
+  const sql = `
+    UPDATE book SET title = ?, author = ?, price = ?, count = ?
+    WHERE book_id = ?
+  `;
+  db.query(sql, [title, author, price, count, bookId], (err) => {
+    if (err) {
+      console.error('Error updating book:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json({ message: 'Book updated successfully' });
   });
 });
 
@@ -58,7 +77,7 @@ router.post('/:id/reviews', (req, res) => {
     INSERT INTO feedback (user_id, book_id, rating, comment, date)
     VALUES (?, ?, ?, ?, CURDATE())
   `;
-  db.query(sql, [user_id, bookId, rating, comment], (err, result) => {
+  db.query(sql, [user_id, bookId, rating, comment], (err) => {
     if (err) {
       console.error('Error adding review:', err);
       return res.status(500).json({ error: 'Database error' });
@@ -85,7 +104,5 @@ router.get('/:id/related', (req, res) => {
     });
   });
 });
-
-
 
 module.exports = router;

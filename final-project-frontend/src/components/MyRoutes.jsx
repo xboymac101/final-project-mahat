@@ -13,6 +13,9 @@ import Orders from '../pages/orders/Orders'
 import Stats from '../pages/stats/Stats'
 import OrderHistory from '../pages/orderhistory/OrderHistory';
 import ThankYou from '../pages/thankyou/ThankYou';
+import EditProfile from '../pages/editprofile/EditProfile';
+import EditBooks from '../components/editbooks/EditBooks';
+
 function MyRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -38,6 +41,14 @@ function MyRoutes() {
         }
       />
       <Route
+        path="/edit-book/:id"
+        element={
+          <ProtectedRoute requireStaffOrAdmin={true}>
+            <EditBooks />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/categories"
         element={
           <ProtectedRoute>
@@ -45,11 +56,19 @@ function MyRoutes() {
           </ProtectedRoute>
         }
       />
-       <Route
+      <Route
         path='/my-orders'
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requireRegularOnly={true}>
             <OrderHistory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/edit-profile'
+        element={
+          <ProtectedRoute>
+            <EditProfile />
           </ProtectedRoute>
         }
       />
@@ -69,10 +88,10 @@ function MyRoutes() {
           </ProtectedRoute>
         }
       />
-            <Route
+        <Route
         path='/shoppingcart'
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requireRegularOnly={true}>
             <ShoppingCart />
           </ProtectedRoute>
         }
@@ -88,7 +107,7 @@ function MyRoutes() {
       <Route
         path="/admin/orders"
         element={
-          <ProtectedRoute requireAdmin={true}>
+          <ProtectedRoute requireStaffOrAdmin={true}>
             <Orders />
           </ProtectedRoute>
         }

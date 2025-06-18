@@ -1,8 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated, isAdmin } = require('./adminauth');
+const dbSingleton = require('../dbSingleton');
+const db = dbSingleton.getConnection();
+const {
+  isAuthenticated,
+  isAdmin,
+  isAdminOrStaff
+} = require('./authMiddleware'); 
 
-router.get('/orders', isAuthenticated, isAdmin, async (req, res) => {
+// GET orders
+router.get('/orders', isAuthenticated, isAdminOrStaff, async (req, res) => {
   const db = require('../dbSingleton').getConnection().promise();
 
   const page = parseInt(req.query.page) || 1;
@@ -62,18 +69,18 @@ router.get('/orders', isAuthenticated, isAdmin, async (req, res) => {
 
     res.json({ orders: results, totalPages });
   } catch (err) {
-    console.error("Admin orders fetch error:", err);
+    console.error("Admin/Staff orders fetch error:", err);
     res.status(500).json({ message: "Failed to fetch orders", error: err });
   }
 });
 
-router.put('/orders/:id', isAuthenticated, isAdmin, async (req, res) => {
+// PUT update order 
+router.put('/orders/:id', isAuthenticated, isAdminOrStaff, async (req, res) => {
   const db = require('../dbSingleton').getConnection().promise();
   const orderId = req.params.id;
   const { status, due_date } = req.body;
 
   try {
-    // Fetch current due_date from order_items and extensions_used from order
     const [[{ due_date: currentDue } = {}] = []] = await db.query(
       `SELECT due_date FROM order_items WHERE order_id = ? AND type = 'rent'`,
       [orderId]
@@ -97,18 +104,17 @@ router.put('/orders/:id', isAuthenticated, isAdmin, async (req, res) => {
     const exceedsMaxPeriod = (newDue - oldDue) / (1000 * 60 * 60 * 24) > 30;
 
     if (isExtension && isOverdue) {
-      return res.status(400).json({ message: "Cannot extend: rental is already overdue." }); // #11
+      return res.status(400).json({ message: "Cannot extend: rental is already overdue." });
     }
 
     if (isExtension && extensions_used >= 2) {
-      return res.status(400).json({ message: "Maximum of 2 extensions reached." }); // #14
+      return res.status(400).json({ message: "Maximum of 2 extensions reached." });
     }
 
     if (isExtension && exceedsMaxPeriod) {
-      return res.status(400).json({ message: "Cannot extend beyond 30 days from original date." }); // #13
+      return res.status(400).json({ message: "Cannot extend beyond 30 days from original date." });
     }
 
-    // Apply changes
     await db.query(
       `UPDATE \`order\` SET status = ?, extensions_used = extensions_used + ? WHERE order_id = ?`,
       [status, isExtension ? 1 : 0, orderId]

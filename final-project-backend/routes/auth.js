@@ -3,6 +3,12 @@ const router = express.Router();
 const dbSingleton = require('../dbSingleton');
 const db = dbSingleton.getConnection();
 const bcrypt = require('bcrypt');
+const {
+  isAuthenticated,
+  isAdmin,
+  isStaff,
+  isAdminOrStaff
+} = require('./authMiddleware');
 
 // רישום משתמש חדש
 router.post('/register', (req, res) => {
@@ -68,6 +74,16 @@ router.post("/login", (req, res) => {
   });
 });
 
+router.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Logout failed" });
+    }
+    res.clearCookie("connect.sid"); // or your session cookie name
+    res.json({ message: "Logged out successfully" });
+  });
+});
+
 router.get('/me', (req, res) => {
 
   if (!req.session.user_id) {
@@ -107,5 +123,21 @@ router.post("/complete-profile", (req, res) => {
   });
 });
 
+router.put('/update-profile', isAuthenticated, (req, res) => {
+  const user_id = req.session.user_id;
+  const { name, email, phone_number, address } = req.body;
 
-module.exports = router;
+  const sql = `UPDATE users SET name = ?, email = ?, phone_number = ?, address = ? WHERE user_id = ?`;
+  db.query(sql, [name, email, phone_number, address, user_id], (err) => {
+    if (err) return res.status(500).json({ message: 'Failed to update profile' });
+    res.json({ message: 'Profile updated successfully' });
+  });
+});
+
+module.exports = {
+  router,
+  isAuthenticated,
+  isAdmin,
+  isStaff,
+  isAdminOrStaff
+};

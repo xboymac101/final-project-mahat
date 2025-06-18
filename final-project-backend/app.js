@@ -1,47 +1,51 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const authRoutes = require("./routes/auth");
-const port = 8801;
-const cartRoutes = require('./routes/cart');
-const session = require('express-session'); 
+const session = require("express-session");
+
+// Route Imports
+const { router: authRoutes } = require("./routes/auth");
+const cartRoutes = require("./routes/cart");
 const booksRoutes = require("./routes/books");
-const adminRoutes = require('./routes/adminroutes');
-const adminStatsRoutes = require('./routes/adminstats');
+const managementRoutes = require("./routes/managementroutes"); // staff + admin
+const adminStatsRoutes = require("./routes/adminstats");
 const createOrderRoute = require("./routes/createorder");
 const orderHistoryRoutes = require("./routes/orderhistory");
-const RulesRoutes = require("./routes/rules")
+const rulesRoutes = require("./routes/rules");
 
+const port = 8801;
+
+// Middleware
 app.use(cors({
-  origin: 'http://localhost:3000',  
-  credentials: true                 
+  origin: "http://localhost:3000",
+  credentials: true,
 }));
+
 app.use(session({
-  secret: 'your_secret_key',
+  secret: "your_secret_key",
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, 
-    httpOnly: true
-  }
+    secure: false,
+    httpOnly: true,
+  },
 }));
 
 app.use(express.json());
 
-
-app.use('/api/books', booksRoutes);
+// Routes
 app.use("/api/auth", authRoutes);
-app.use('/api/cart', cartRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/admin', adminStatsRoutes);
-app.use("/api/order", createOrderRoute);
-app.use("/api/order", orderHistoryRoutes);
-app.use('/api/rules', RulesRoutes);
+app.use("/api/books", booksRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/admin", managementRoutes); // includes /admin/orders (Staff+Admin)
+app.use("/api/admin", adminStatsRoutes); // includes /admin/stats (Admin only)
+app.use("/api/order", createOrderRoute); // placing orders
+app.use("/api/order", orderHistoryRoutes); // my-orders history
+app.use("/api/rules", rulesRoutes); // edit/view rules
 
-
-
+// Error handler (keep at the end)
 app.use((err, req, res, next) => {
-  console.error(err); // Log error
+  console.error("Unhandled Error:", err);
   res.status(500).json({
     error: "Internal Server Error",
     message: err.message,
@@ -49,5 +53,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`✅ Server is running on http://localhost:${port}`);
 });

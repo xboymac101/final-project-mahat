@@ -136,3 +136,70 @@
   color: #7668c1;
   margin-top: 1px;
 }
+
+.reviewSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px auto;
+}
+
+.reviewBtn {
+  padding: 10px 16px;
+  background-color: #7c4dff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.reviewForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 20px;
+}
+
+.reviewForm label {
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+}
+
+.reviewForm input,
+.reviewForm textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.reviewForm button {
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.centeredWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.editBtn {
+  background-color: #5c6bc0;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.editBtn:hover {
+  background-color: #3f51b5;
+}

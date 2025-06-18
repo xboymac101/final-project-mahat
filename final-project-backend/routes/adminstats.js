@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated, isAdmin } = require('./adminauth');
+const { isAuthenticated, isAdmin } = require('./authMiddleware');
 
 router.get('/stats', isAuthenticated, isAdmin, async (req, res) => {
   try {

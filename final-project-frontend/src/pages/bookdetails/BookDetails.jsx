@@ -15,13 +15,26 @@ function BookDetails() {
   const [quantity, setQuantity] = useState(0); 
   const [type, setType] = useState("buy");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({ rating: "", comment: "" });
+  const [userId, setUserId] = useState(null);
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     setLoading(true);
 
-    axios.get('/api/auth/me', { withCredentials: true })
-      .then(res => setIsAdmin(res.data.role === 'Admin'))
-      .catch(() => setIsAdmin(false));
+
+      axios.get('/api/auth/me', { withCredentials: true })
+    .then(res => {
+      setIsAdmin(res.data.role === 'Admin');
+      setUserId(res.data.user_id);
+      setRole(res.data.role);
+    })
+    .catch(() => {
+      setIsAdmin(false);
+      setRole(null);
+      setUserId(null);
+    });
 
     fetch(`http://localhost:8801/api/books/${id}`)
       .then((res) => res.json())
@@ -80,6 +93,28 @@ const handleAddToCart = () => {
   }
 };
 
+function handleReviewSubmit(e) {
+  e.preventDefault();
+  axios.post(`/api/books/${id}/reviews`, {
+    user_id: userId,
+    rating: newReview.rating,
+    comment: newReview.comment
+  }, { withCredentials: true })
+    .then(() => {
+      setShowReviewForm(false);
+      setNewReview({ rating: "", comment: "" });
+
+      // Refresh reviews
+      fetch(`http://localhost:8801/api/books/${id}/reviews`)
+        .then(res => res.json())
+        .then(data => setReviews(data));
+    })
+    .catch(err => {
+      alert("Failed to submit review.");
+      console.error(err);
+    });
+}
+
 // actual add-to-cart POST logic
 function proceedAdd() {
   axios.post(
@@ -115,6 +150,7 @@ function proceedAdd() {
           <div className={classes.detail}><b>Category:</b> {book.category}</div>
           <div className={classes.detail}><b>Genre:</b> {book.genre}</div>
           <div className={classes.desc}>{book.description}</div>
+          <div className={classes.detail}><b>In Stock:</b> {book.count}</div>
           <div className={classes.price}><b>Price:</b> ${book.price}</div>
 
           {book.count > 0 ? (
@@ -162,8 +198,51 @@ function proceedAdd() {
           </div>
         </div>
       </div>
-
+              {(role === "Staff" || role === "Admin") && (
+      <div className={classes.centeredWrapper}>
+        <button
+          className={classes.editBtn}
+          onClick={() => window.location.href = `/edit-book/${book.book_id}`}
+        >
+          ✏️ Edit Book
+        </button>
+      </div>
+    )}
       <Reviews reviews={reviews} />
+
+          {role === "Regular" && userId && (
+      <div className={classes.reviewSection}>
+      {!showReviewForm ? (
+        <button className={classes.reviewBtn} onClick={() => setShowReviewForm(true)}>
+          📝 Add Review
+        </button>
+      ) : (
+        <form onSubmit={handleReviewSubmit} className={classes.reviewForm}>
+          <label>
+            Rating (1–5):
+            <input
+              type="number"
+              min="1"
+              max="5"
+              value={newReview.rating}
+              onChange={(e) => setNewReview({ ...newReview, rating: e.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Comment:
+            <textarea
+              value={newReview.comment}
+              onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+              required
+            />
+          </label>
+          <button type="submit">Submit Review</button>
+        </form>
+      )}
+    </div>
+  )}
+
       <RelatedProducts related={related} />
     </div>
   );
