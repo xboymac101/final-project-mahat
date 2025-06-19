@@ -1,11 +1,27 @@
 .footer {
-  background-color: #2e5339; /* dark forest green */
-  color: white;
-  padding: 2rem 0;
+  background-color: var(--forest-dark); 
+  color: var(--text-light);
+  padding: 3rem 2rem;
+  text-align: center;
   margin-top: auto;
-  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
 }
 
+.title {
+  font-size: 2.4rem;
+  font-weight: bold;
+  color: var(--sunshine); 
+}
+
+.icons {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 2rem;
+  justify-content: center;
+}
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -14,17 +30,4 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-}
-
-.title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #a2d2a0; /* soft green */
-}
-
-.icons {
-  display: flex;
-  gap: 1.2rem;
-  font-size: 1.6rem;
-  justify-content: center;
 }
