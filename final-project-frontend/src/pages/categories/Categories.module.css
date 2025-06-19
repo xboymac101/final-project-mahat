@@ -1,7 +1,12 @@
 .categoriesPage {
   padding: 32px 0;
-  background: #fafbfc;
   min-height: 100vh;
+  background-color: var(--cream-bg);
+  background-image: url("../../assets/img/LeafBackground.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .categoriesRow {
