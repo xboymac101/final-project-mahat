@@ -1,21 +1,21 @@
-import React from 'react'
+import React from 'react';
 import classes from './footer.module.css';
 
 export default function Footer() {
   return (
     <footer className={classes.footer}>
-      <div className={classes.title}>Bookhaven</div>
+      <div className={classes.container}>
+        <div className={classes.title}>📚 BookHaven</div>
 
-      <div className={classes.icons}>
-        <span>📘</span>
-        <span>📷</span>
-        <span>⚙️</span>
+        <div className={classes.icons}>
+          
+          <span title="Instagram">📷@Bookhaven_Project</span>
+          <span title="Email">✉️ projectbookhaven@gmail.com</span>
+        </div>
+
+        <p>Open daily · Delivery available · Rent & Buy your favorite books</p>
+        <p>© {new Date().getFullYear()} BookHaven. All rights reserved.</p>
       </div>
-
-      <p className={classes.copy}>
-        Copyright© BookHaven 2025. All rights reserved.
-      </p>
     </footer>
   );
 }
-

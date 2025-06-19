@@ -1,26 +1,30 @@
 .footer {
-  background-color: white;
+  background-color: #2e5339; /* dark forest green */
+  color: white;
+  padding: 2rem 0;
+  margin-top: auto;
+  font-family: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
   text-align: center;
-  padding: 20px;
-  border-top: 1px solid #e0e0e0;
-  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .title {
-  font-size: 1.2rem;
+  font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  color: #a2d2a0; /* soft green */
 }
 
 .icons {
-  font-size: 1.2rem;
   display: flex;
+  gap: 1.2rem;
+  font-size: 1.6rem;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.copy {
-  font-size: 0.8rem;
-  color: #888;
 }
