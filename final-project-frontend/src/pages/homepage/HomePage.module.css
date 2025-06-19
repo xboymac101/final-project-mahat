@@ -15,30 +15,30 @@
   letter-spacing: 1px;
 }
 
-.bookGrid {
+.booksGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 2.5rem;
-  padding: 3rem 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  justify-items: center;
 }
+
+
 .bookCard {
-  background: #ffffff;
-  border-radius: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  padding: 2rem;
-  transition: transform 0.2s ease;
+  padding: 1rem;
+  width: 100%;
+  max-width: 180px;
 }
 
 .bookCard:hover {
   transform: translateY(-5px);
 }
 .bookImage {
-  width: 120px;
-  height: 170px;
-  border-radius: 8px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3/4;
   object-fit: cover;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 8px #0001;
+  border-radius: 6px;
   background: #eee;
 }
 
@@ -69,4 +69,56 @@
 .discountedPrice {
   color: red;
   font-weight: bold;
+}
+
+.randomFact {
+  background-color: #e2f4e9;
+  color: #0c3b2e;
+  padding: 1.5rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  border-left: 6px solid #2d8659;
+  border-radius: 8px;
+  font-size: 1.8rem;
+}
+
+.sectionTitle {
+  font-size: 2.2rem;
+  margin: 3rem 0 1rem 0;
+  text-align: center;
+  color: var(--h-color);
+}
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  margin-top: 3rem;
+}
+
+.seeAll {
+  font-size: 1.4rem;
+  color: #0077cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.banner {
+  background: linear-gradient(135deg, #e1f4ec, #d8f0ff);
+  padding: 3rem 2rem;
+  text-align: center;
+  border-radius: 12px;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.banner h1 {
+  font-size: 3rem;
+  color: #1a3c34;
+  margin-bottom: 1rem;
+}
+
+.banner p {
+  font-size: 1.6rem;
+  color: #2e5e4f;
 }

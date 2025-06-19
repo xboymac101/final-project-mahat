@@ -60,7 +60,7 @@ export default function SearchPage() {
                 <img src={book.img} alt={book.title} />
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
-                <p>{book.final_price} ₪</p>
+                <p>${book.final_price}</p>
               </div>
             ))}
           </div>

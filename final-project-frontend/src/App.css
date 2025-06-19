@@ -106,11 +106,12 @@ footer {
 }
 
 .logo img {
-  height: 5rem;
+  height: 10rem;
+  width: 10rem;
 }
 
 .logo span {
-  color: var(--sunshine);
+  color: #e8b179;
   font-size: 3rem;
 }
 
@@ -120,7 +121,7 @@ footer {
 }
 
 .menu li a {
-  color: var(--sunshine);
+  color:#e8b179;
   font-weight: bold;
 }
 
