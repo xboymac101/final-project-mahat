@@ -2,11 +2,26 @@ const express = require('express');
 const router = express.Router();
 const dbSingleton = require('../dbSingleton');
 const db = dbSingleton.getConnection();
-const { isAdminOrStaff } = require('./auth'); // Add this line
+const { isAdminOrStaff } = require('./auth');
 
-// GET all books
+// ✅ GET all books with discount-aware pricing
 router.get('/', (req, res) => {
-  const sql = 'SELECT * FROM book';
+  const sql = `
+    SELECT 
+      b.*, 
+      d.discount_percent,
+      ROUND(
+        CASE 
+          WHEN d.discount_percent IS NOT NULL THEN b.price * (1 - d.discount_percent / 100)
+          ELSE b.price 
+        END, 2
+      ) AS final_price
+    FROM book b
+    LEFT JOIN discounts d 
+      ON b.book_id = d.book_id 
+      OR b.category = d.category
+  `;
+
   db.query(sql, (err, results) => {
     if (err) {
       console.error('Error fetching books:', err);
@@ -16,23 +31,33 @@ router.get('/', (req, res) => {
   });
 });
 
-// GET single book by ID
+// ✅ GET single book by ID (already updated)
 router.get('/:id', (req, res) => {
   const bookId = req.params.id;
-  const sql = 'SELECT * FROM book WHERE book_id = ?';
+  const sql = `
+    SELECT 
+  b.*, 
+  COALESCE(db.discount_percent, dc.discount_percent) AS discount_percent,
+  ROUND(
+    CASE 
+      WHEN db.discount_percent IS NOT NULL THEN b.price * (1 - db.discount_percent / 100)
+      WHEN dc.discount_percent IS NOT NULL THEN b.price * (1 - dc.discount_percent / 100)
+      ELSE b.price
+    END, 
+    2
+  ) AS final_price
+FROM book b
+LEFT JOIN discounts db ON b.book_id = db.book_id
+LEFT JOIN discounts dc ON b.category = dc.category
+WHERE b.book_id = ?`;
   db.query(sql, [bookId], (err, results) => {
-    if (err) {
-      console.error('Error fetching book:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Book not found' });
-    }
+    if (err) return res.status(500).json({ error: 'Database error' });
+    if (results.length === 0) return res.status(404).json({ error: 'Book not found' });
     res.json(results[0]);
   });
 });
 
-// PUT update book (staff/admin only)
+// ✅ PUT update book (staff/admin only)
 router.put('/:id', isAdminOrStaff, (req, res) => {
   const bookId = req.params.id;
   const { title, author, price, count } = req.body;
@@ -50,7 +75,7 @@ router.put('/:id', isAdminOrStaff, (req, res) => {
   });
 });
 
-// GET reviews for a book
+// ✅ GET reviews for a book
 router.get('/:id/reviews', (req, res) => {
   const bookId = req.params.id;
   const sql = `
@@ -69,7 +94,7 @@ router.get('/:id/reviews', (req, res) => {
   });
 });
 
-// POST add a review for a book
+// ✅ POST add a review
 router.post('/:id/reviews', (req, res) => {
   const bookId = req.params.id;
   const { user_id, rating, comment } = req.body;
@@ -86,7 +111,7 @@ router.post('/:id/reviews', (req, res) => {
   });
 });
 
-// GET related books (same category, exclude current book)
+// ✅ GET related books (same category, exclude current book)
 router.get('/:id/related', (req, res) => {
   const bookId = req.params.id;
   const getCategory = 'SELECT category FROM book WHERE book_id = ?';

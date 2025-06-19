@@ -23,7 +23,14 @@ function BooksHome() {
               <img src={book.img} alt={book.title} className={styles.bookImage} />
               <div className={styles.bookInfo}>
                 <div className={styles.bookPrice}>
-                  {book.price ? `$${book.price}` : ""}
+                  {book.discount_percent ? (
+                    <>
+                      <span className={styles.originalPrice}>${book.price}</span>
+                      <span className={styles.discountedPrice}>${book.final_price}</span>
+                    </>
+                  ) : (
+                    `$${book.price}`
+                  )}
                 </div>
                 <div className={styles.bookName}>{book.title}</div>
                 <div className={styles.bookAuthor}>{book.author}</div>

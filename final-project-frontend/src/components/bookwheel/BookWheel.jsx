@@ -37,7 +37,16 @@ function BookWheel({ books = [] }) {
                   {book.title.length > 32 ? book.title.slice(0, 29) + '...' : book.title}
                 </div>
                 <div className={styles.bookAuthor}>{book.author}</div>
-                {book.price && <div className={styles.bookPrice}>${book.price}</div>}
+                <div className={styles.bookPrice}>
+                {book.discount_percent ? (
+                  <>
+                    <span className={styles.originalPrice}>${book.price}</span>
+                    <span className={styles.discountedPrice}>${book.final_price}</span>
+                  </>
+                ) : (
+                  `$${book.price}`
+                )}
+              </div>
               </div>
             </Link>
           ))}

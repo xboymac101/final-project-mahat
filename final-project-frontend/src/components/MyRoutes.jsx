@@ -15,7 +15,7 @@ import OrderHistory from '../pages/orderhistory/OrderHistory';
 import ThankYou from '../pages/thankyou/ThankYou';
 import EditProfile from '../pages/editprofile/EditProfile';
 import EditBooks from '../components/editbooks/EditBooks';
-
+import Discounts from '../pages/discounts/Discounts'
 function MyRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -101,6 +101,14 @@ function MyRoutes() {
         element={
           <ProtectedRoute>
             <Rules />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/discounts"
+        element={
+          <ProtectedRoute requireAdmin={true}>
+            <Discounts />
           </ProtectedRoute>
         }
       />

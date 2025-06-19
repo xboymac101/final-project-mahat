@@ -105,10 +105,21 @@ router.get('/', (req, res) => {
   if (!user_id) return res.status(401).json({ message: 'Not logged in' });
 
   const sql = `
-    SELECT sc.id, sc.book_id, sc.amount, b.title, b.price, b.img AS image, b.count, sc.type
-    FROM shoppingcart sc
-    JOIN book b ON sc.book_id = b.book_id
-    WHERE sc.user_id = ?
+   SELECT 
+  sc.id, sc.book_id, sc.amount, b.title, b.img AS image, b.count, sc.type,
+  ROUND(
+    CASE 
+      WHEN db.discount_percent IS NOT NULL THEN b.price * (1 - db.discount_percent / 100)
+      WHEN dc.discount_percent IS NOT NULL THEN b.price * (1 - dc.discount_percent / 100)
+      ELSE b.price
+    END, 
+    2
+  ) AS price
+FROM shoppingcart sc
+JOIN book b ON sc.book_id = b.book_id
+LEFT JOIN discounts db ON b.book_id = db.book_id
+LEFT JOIN discounts dc ON b.category = dc.category
+WHERE sc.user_id = ?
   `;
   db.query(sql, [user_id], (err, results) => {
     if (err) {

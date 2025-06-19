@@ -33,3 +33,14 @@
   margin-top: 3px;
   font-size: 1rem;
 }
+
+.originalPrice {
+  text-decoration: line-through;
+  color: gray;
+  margin-right: 8px;
+}
+
+.discountedPrice {
+  color: red;
+  font-weight: bold;
+}

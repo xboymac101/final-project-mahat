@@ -12,7 +12,8 @@ const adminStatsRoutes = require("./routes/adminstats");
 const createOrderRoute = require("./routes/createorder");
 const orderHistoryRoutes = require("./routes/orderhistory");
 const rulesRoutes = require("./routes/rules");
-
+const adminDiscountRoutes = require("./routes/admindiscounts");
+const categoriesRoutes = require("./routes/categories");
 const port = 8801;
 
 // Middleware
@@ -37,12 +38,13 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/books", booksRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/categories", categoriesRoutes)
 app.use("/api/admin", managementRoutes); // includes /admin/orders (Staff+Admin)
 app.use("/api/admin", adminStatsRoutes); // includes /admin/stats (Admin only)
 app.use("/api/order", createOrderRoute); // placing orders
 app.use("/api/order", orderHistoryRoutes); // my-orders history
 app.use("/api/rules", rulesRoutes); // edit/view rules
-
+app.use("/api/admin/discounts", adminDiscountRoutes);
 // Error handler (keep at the end)
 app.use((err, req, res, next) => {
   console.error("Unhandled Error:", err);

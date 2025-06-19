@@ -142,3 +142,14 @@
   color: #fff;
   border: 1.5px solid #7c4dff;
 }
+
+.originalPrice {
+  text-decoration: line-through;
+  color: gray;
+  margin-right: 8px;
+}
+
+.discountedPrice {
+  color: red;
+  font-weight: bold;
+}

@@ -1,0 +1,72 @@
+.discountPage {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.discountPage h2 {
+  text-align: center;
+  color: #3c3c3c;
+  margin-bottom: 20px;
+}
+
+.discountForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.selector {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-weight: 500;
+  color: #444;
+}
+
+.selector label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.dropdown {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+
+.inputField {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.submitBtn {
+  padding: 12px;
+  font-size: 1rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitBtn:hover {
+  background-color: #43a047;
+}
+
+.success {
+  text-align: center;
+  color: green;
+  font-weight: 500;
+}

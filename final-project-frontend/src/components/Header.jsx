@@ -85,8 +85,11 @@ function Header() {
                     <div className={styles.adminDropdown}>
                       <button onClick={() => handleAdminSelect('/admin/orders')}>📦 Orders</button>
                       {role === 'Admin' && (
+                        <>
                         <button onClick={() => handleAdminSelect('/admin/stats')}>📊 Statistics</button>
-                      )}
+                        <button onClick={() => handleAdminSelect('/admin/discounts')}>💸 Manage Discounts</button>
+                       </>
+                    )}
                     </div>
                   )}
                 </li>

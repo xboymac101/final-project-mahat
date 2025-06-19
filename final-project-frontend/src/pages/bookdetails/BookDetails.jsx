@@ -151,7 +151,21 @@ function proceedAdd() {
           <div className={classes.detail}><b>Genre:</b> {book.genre}</div>
           <div className={classes.desc}>{book.description}</div>
           <div className={classes.detail}><b>In Stock:</b> {book.count}</div>
-          <div className={classes.price}><b>Price:</b> ${book.price}</div>
+          <div className={classes.price}>
+          <b>Price:</b>{' '}
+          {book.discount_percent ? (
+            <>
+              <span style={{ textDecoration: 'line-through', color: 'gray' }}>
+                ${book.price}
+              </span>{' '}
+              <span style={{ color: 'green', fontWeight: 'bold' }}>
+                ${book.final_price}
+              </span>
+            </>
+          ) : (
+            `$${book.price}`
+          )}
+        </div>
 
           {book.count > 0 ? (
             <div style={{ margin: "15px 0" }}>
