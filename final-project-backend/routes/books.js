@@ -7,6 +7,7 @@ const { isAdminOrStaff } = require('./auth');
 // ✅ GET all books with discount-aware pricing
 router.get('/', (req, res) => {
   const search = req.query.search;
+  const isDiscounted = req.query.discounted === 'true';
   const params = [];
 
   let sql = `
@@ -25,10 +26,21 @@ router.get('/', (req, res) => {
       OR b.category = d.category
   `;
 
+  // Conditions for WHERE clause
+  const conditions = [];
+
+  if (isDiscounted) {
+    conditions.push('d.discount_percent IS NOT NULL');
+  }
+
   if (search) {
-    sql += ' WHERE b.title LIKE ? OR b.author LIKE ?';
+    conditions.push('(b.title LIKE ? OR b.author LIKE ?)');
     const term = `%${search}%`;
     params.push(term, term);
+  }
+
+  if (conditions.length > 0) {
+    sql += ' WHERE ' + conditions.join(' AND ');
   }
 
   db.query(sql, params, (err, results) => {
@@ -39,6 +51,7 @@ router.get('/', (req, res) => {
     res.json(results);
   });
 });
+
 
 // ✅ GET single book by ID (already updated)
 router.get('/:id', (req, res) => {

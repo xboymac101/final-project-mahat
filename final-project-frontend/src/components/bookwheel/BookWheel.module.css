@@ -11,15 +11,6 @@
   margin-right: auto;
 }
 
-.booksRow {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-  align-items: flex-start;
-  flex: 1;
-  overflow: hidden;
-}
-
 .bookCard {
   width: 165px;
   min-width: 140px;
@@ -44,3 +35,53 @@
   color: red;
   font-weight: bold;
 }
+
+/* New: Carousel container and layout fix */
+.carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  padding: 1rem 0;
+}
+
+.booksRow {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: flex-start;
+  flex: 1;
+  overflow: hidden;
+  padding: 0 48px; /* Space for arrows */
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+  z-index: 2;
+}
+
+.arrow:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.arrowLeft {
+  left: 0.5rem;
+}
+
+.arrowRight {
+  right: 0.5rem;
+}
+

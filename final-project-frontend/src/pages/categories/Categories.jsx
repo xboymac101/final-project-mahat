@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import styles from './Categories.module.css';
 import axios from "axios";
 
@@ -10,17 +10,23 @@ function CategoriesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 12;
 
+  const [searchParams] = useSearchParams();
+  const discountedOnly = searchParams.get("discounted") === "true";
+
+  // Fetch books from backend
   useEffect(() => {
-    axios.get('/api/books')
+    const url = discountedOnly ? "/api/books?discounted=true" : "/api/books";
+    axios.get(url)
       .then(res => setBooks(res.data))
       .catch(err => console.error(err));
-  }, []);
+  }, [discountedOnly]);
 
+  // Reset pagination when filters change
   useEffect(() => {
-    setCurrentPage(1); // Reset to first page when filter changes
+    setCurrentPage(1);
   }, [selectedCategory, selectedGenres]);
 
-  // Extract unique categories and genres from books
+  // Extract unique categories and genres
   const uniqueCategories = ["All", ...Array.from(new Set(books.map(book => book.category)))];
   const uniqueGenres = Array.from(new Set(books.map(book => book.genre)));
 
@@ -51,6 +57,13 @@ function CategoriesPage() {
 
   return (
     <div className={styles.categoriesPage}>
+      {/* Optional Banner */}
+      {discountedOnly && (
+        <div className={styles.discountBanner}>
+          Showing only discounted books. <Link to="/books">Clear filter</Link>
+        </div>
+      )}
+
       {/* Top: Category pills */}
       <div className={styles.categoriesRow}>
         {uniqueCategories.map(cat => (
@@ -98,15 +111,15 @@ function CategoriesPage() {
                 <div className={styles.bookTitle}>{book.title}</div>
                 <div className={styles.bookAuthor}>{book.author}</div>
                 <div className={styles.bookPrice}>
-                {book.discount_percent ? (
-                  <>
-                    <span className={styles.originalPrice}>${book.price}</span>
-                    <span className={styles.discountedPrice}>${book.final_price}</span>
-                  </>
-                ) : (
-                  `$${book.price}`
-                )}
-              </div>
+                  {book.discount_percent ? (
+                    <>
+                      <span className={styles.originalPrice}>${book.price}</span>
+                      <span className={styles.discountedPrice}>${book.final_price}</span>
+                    </>
+                  ) : (
+                    `$${book.price}`
+                  )}
+                </div>
               </div>
             </Link>
           ))}
