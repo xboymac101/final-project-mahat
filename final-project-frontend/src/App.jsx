@@ -19,10 +19,10 @@ function App() {
   return (
     <div className="app-wrapper">
       <BrowserRouter>
-        <CartProvider>
-          {isLoggedIn && <Header />}
+        <CartProvider isLoggedIn={isLoggedIn}>
+          {isLoggedIn && <Header setIsLoggedIn={setIsLoggedIn} />}
           <MyRoutes isLoggedIn={isLoggedIn} />
-          {isLoggedIn && <Footer />}
+          {isLoggedIn && <Footer isLoggedIn={isLoggedIn} />}
         </CartProvider>
       </BrowserRouter>
     </div>

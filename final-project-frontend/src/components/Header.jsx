@@ -6,7 +6,7 @@ import { useCart } from '../components/cartnotification/CartNotification';
 import axios from 'axios';
 import styles from './header.module.css';
 
-function Header() {
+function Header({ setIsLoggedIn }) {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAdminMenu, setShowAdminMenu] = useState(false);
@@ -42,6 +42,7 @@ function Header() {
     axios.post('/api/auth/logout', {}, { withCredentials: true })
       .then(() => {
         setRole(null);
+        setIsLoggedIn(false);
         navigate('/');
       })
       .catch(() => alert("Logout failed."));
