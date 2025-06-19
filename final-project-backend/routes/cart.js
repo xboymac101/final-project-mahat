@@ -101,7 +101,6 @@ router.post('/add', blockNonRegularUsers, (req, res) => {
 // Get cart by user
 router.get('/', (req, res) => {
   const user_id = req.session.user_id;
-  console.log("Fetching cart for user:", user_id);
   if (!user_id) return res.status(401).json({ message: 'Not logged in' });
 
   const sql = `

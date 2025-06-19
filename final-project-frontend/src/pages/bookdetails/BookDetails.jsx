@@ -5,6 +5,7 @@ import Reviews from "../../components/reviews/Reviews";
 import RelatedProducts from "../../components/relatedproducts/RelatedProducts";
 import axios from "axios";
 import QuantityPicker from "../../components/quantitypicker/QuantityPicker"; 
+import { useCart } from '../../components/cartnotification/CartNotification';
 
 function BookDetails() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ function BookDetails() {
   const [newReview, setNewReview] = useState({ rating: "", comment: "" });
   const [userId, setUserId] = useState(null);
   const [role, setRole] = useState(null);
+  const { fetchCartCount } = useCart();
 
   useEffect(() => {
     setLoading(true);
@@ -124,6 +126,7 @@ function proceedAdd() {
   )
     .then((res) => {
       alert(res.data.message || "Added to cart!");
+      fetchCartCount(); 
     })
     .catch((err) => {
       if (err.response && err.response.status === 401) {

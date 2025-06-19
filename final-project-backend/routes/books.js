@@ -6,7 +6,10 @@ const { isAdminOrStaff } = require('./auth');
 
 // ✅ GET all books with discount-aware pricing
 router.get('/', (req, res) => {
-  const sql = `
+  const search = req.query.search;
+  const params = [];
+
+  let sql = `
     SELECT 
       b.*, 
       d.discount_percent,
@@ -22,7 +25,13 @@ router.get('/', (req, res) => {
       OR b.category = d.category
   `;
 
-  db.query(sql, (err, results) => {
+  if (search) {
+    sql += ' WHERE b.title LIKE ? OR b.author LIKE ?';
+    const term = `%${search}%`;
+    params.push(term, term);
+  }
+
+  db.query(sql, params, (err, results) => {
     if (err) {
       console.error('Error fetching books:', err);
       return res.status(500).json({ error: 'Database error' });

@@ -3,12 +3,15 @@ import axios from "axios";
 import classes from './ShoppingCart.module.css';
 import UserDetailsPopup from "../../components/userdetailspopup/UserDetailsPopup"
 import PayPalButton from "../../components/paypal/PayPalButton"
+import { useCart } from '../../components/cartnotification/CartNotification';
 
 export default function ShoppingCart() {
   const [cart, setCart] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { fetchCartCount } = useCart();
+
 
  useEffect(() => {
   axios.get('/api/auth/me', { withCredentials: true })
@@ -51,11 +54,14 @@ export default function ShoppingCart() {
   }
 
   function handleRemove(book_id, type) {
-    axios
-      .post("/api/cart/remove", { book_id, type }, { withCredentials: true })
-      .then(() => fetchCart())
-      .catch(() => alert("Error removing item"));
-  }
+  axios
+    .post("/api/cart/remove", { book_id, type }, { withCredentials: true })
+    .then(() => {
+      fetchCart();
+      fetchCartCount(); 
+    })
+    .catch(() => alert("Error removing item"));
+}
 
   function handleDecrease(book_id, type) {
     setProcessing(true);
@@ -63,6 +69,7 @@ export default function ShoppingCart() {
       .post("/api/cart/decrease", { book_id, type }, { withCredentials: true })
       .then(() => {
         fetchCart();
+        fetchCartCount();
         setProcessing(false);
       })
       .catch((err) => {
@@ -71,7 +78,7 @@ export default function ShoppingCart() {
       });
   }
 
- function handleIncrease(book_id, currentAmount, maxCount, type) {
+function handleIncrease(book_id, currentAmount, maxCount, type) {
   if (processing) return;
 
   setProcessing(true);
@@ -90,15 +97,14 @@ export default function ShoppingCart() {
         setProcessing(false);
         return;
       }
-console.log("Trying to add:", {
-  book_id,
-  amount: 1,
-  type
-});
+
       axios.post("/api/cart/add", { book_id, amount: 1, type }, { withCredentials: true })
         .then(() => {
           fetchCart();
-          setProcessing(false);
+          setTimeout(() => {
+            fetchCartCount();
+            setProcessing(false);
+          }, 150);
         })
         .catch((err) => {
           alert("Error updating item: " + (err.response?.data?.message || ""));
@@ -178,7 +184,7 @@ console.log("Trying to add:", {
           <h3 className={classes["cart-total"]}>Total: ${total.toFixed(2)}</h3>
           {total > 0 && !showPopup && (
           <div className={classes["paypal-wrapper"]}>
-            <PayPalButton amount={total} cart={cart} setCart={setCart} />
+            <PayPalButton amount={total} cart={cart} setCart={setCart} fetchCartCount={fetchCartCount} />
           </div>
         )}
         </>
