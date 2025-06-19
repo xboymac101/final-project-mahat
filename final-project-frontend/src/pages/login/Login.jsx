@@ -27,7 +27,7 @@ function checkLogin() {
         if (role === "Admin") {
   window.location.href = "/admin/orders"; 
 } else {
-  window.location.href = "/books";        
+  window.location.href = "/";        
 }
       }); 
     })
