@@ -77,7 +77,7 @@ li {
   height: 100%;
 }
 .main {
-  flex-grow: 1;
+  flex: 1;
 }
 /* #endregion */
 
