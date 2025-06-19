@@ -142,3 +142,15 @@ button[type="submit"]:hover {
     height: 140px;
   }
 }
+
+.success {
+  color: green;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.error {
+  color: red;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}

@@ -84,6 +84,7 @@ function Header() {
                   {showAdminMenu && (
                     <div className={styles.adminDropdown}>
                       <button onClick={() => handleAdminSelect('/admin/orders')}>📦 Orders</button>
+                      <button onClick={() => handleAdminSelect('/admin/email-replies')}>📧 Email Replies</button>
                       {role === 'Admin' && (
                         <>
                         <button onClick={() => handleAdminSelect('/admin/stats')}>📊 Statistics</button>

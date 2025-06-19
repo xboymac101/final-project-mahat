@@ -16,6 +16,11 @@ import ThankYou from '../pages/thankyou/ThankYou';
 import EditProfile from '../pages/editprofile/EditProfile';
 import EditBooks from '../components/editbooks/EditBooks';
 import Discounts from '../pages/discounts/Discounts'
+import StaffEmailReplies from "../pages/staffemailreplies/StaffEmailReplies";
+
+
+
+
 function MyRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -117,6 +122,14 @@ function MyRoutes() {
         element={
           <ProtectedRoute requireStaffOrAdmin={true}>
             <Orders />
+          </ProtectedRoute>
+        }
+/>
+<Route
+        path="/admin/email-replies"
+        element={
+          <ProtectedRoute requireStaffOrAdmin={true}>
+            <StaffEmailReplies  />
           </ProtectedRoute>
         }
 />
