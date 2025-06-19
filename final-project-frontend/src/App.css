@@ -26,12 +26,15 @@ body {
   font-size: 1.6rem;
   font-weight: 400;
   line-height: 1.5;
-  height: 100vh;
+
+  min-height: 100vh; /* שיהיה לפחות בגובה המסך, אבל יגדל לפי הצורך */
   background-color: var(--cream-bg);
   background-image: url("./assets/img/LeafBackground.png");
-  background-size: cover;
+  background-size: cover; /* או contain אם זו תמונת pattern */
   background-repeat: no-repeat;
   background-position: center;
+  background-attachment: fixed; /* שהתמונה תישאר במקום גם כשגוללים */
+
   font-family: 'Poppins', sans-serif;
   color: var(--text-dark);
 }
