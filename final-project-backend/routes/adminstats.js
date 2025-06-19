@@ -1,63 +1,81 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated, isAdmin } = require('./authMiddleware');
+const db = require('../dbSingleton').getConnection();
 
-router.get('/stats', isAuthenticated, isAdmin, async (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
-    const db = require('../dbSingleton').getConnection().promise();
+    const stats = {};
+    const range = parseInt(req.query.range) || 30;
 
-    const [totalOrders] = await db.query(
-      `SELECT COUNT(*) AS count FROM \`order\``
-    );
+    // Total Orders (within range)
+    const [totalOrders] = await db.promise().query(`
+      SELECT COUNT(*) AS count FROM \`order\`
+      WHERE order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+    `, [range]);
+    stats.totalOrders = totalOrders[0].count;
 
-    const [completedOrders] = await db.query(
-      `SELECT COUNT(*) AS count FROM \`order\` WHERE status = 'Completed'`
-    );
+    // Completed Orders (within range)
+    const [completedOrders] = await db.promise().query(`
+      SELECT COUNT(*) AS count FROM \`order\`
+      WHERE status = 'Completed' AND order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+    `, [range]);
+    stats.completedOrders = completedOrders[0].count;
 
-    const [canceledOrders] = await db.query(
-      `SELECT COUNT(*) AS count FROM \`order\` WHERE status = 'Canceled'`
-    );
+    // Canceled Orders (within range)
+    const [canceledOrders] = await db.promise().query(`
+      SELECT COUNT(*) AS count FROM \`order\`
+      WHERE status = 'Canceled' AND order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+    `, [range]);
+    stats.canceledOrders = canceledOrders[0].count;
 
-    const [revenue] = await db.query(
-      `SELECT SUM(oi.price * oi.quantity) AS total
-       FROM \`order\` o
-       JOIN order_items oi ON o.order_id = oi.order_id
-       WHERE o.status = 'Completed'`
-    );
+    // Total Revenue (within range)
+    const [revenue] = await db.promise().query(`
+      SELECT SUM(price * quantity) AS total FROM order_items oi
+      JOIN \`order\` o ON o.order_id = oi.order_id
+      WHERE o.status = 'Completed' AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+    `, [range]);
+    stats.revenue = revenue[0].total || 0;
 
-    const [topBook] = await db.query(
-      `SELECT b.title, SUM(oi.quantity) AS count
-       FROM \`order\` o
-       JOIN order_items oi ON o.order_id = oi.order_id
-       JOIN book b ON b.book_id = oi.book_id
-       WHERE o.status = 'Completed'
-       GROUP BY oi.book_id
-       ORDER BY count DESC
-       LIMIT 1`
-    );
+    // Top Book (within range)
+    const [topBook] = await db.promise().query(`
+      SELECT b.title, SUM(oi.quantity) AS total_sold
+      FROM order_items oi
+      JOIN book b ON b.book_id = oi.book_id
+      JOIN \`order\` o ON o.order_id = oi.order_id
+      WHERE o.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+      GROUP BY b.book_id
+      ORDER BY total_sold DESC
+      LIMIT 1
+    `, [range]);
+    stats.topBook = topBook[0] || null;
 
-    const [topCustomer] = await db.query(
-      `SELECT u.name, COUNT(*) AS orders
-       FROM \`order\` o
-       JOIN users u ON u.user_id = o.user_id
-       WHERE o.status = 'Completed'
-       GROUP BY o.user_id
-       ORDER BY orders DESC
-       LIMIT 1`
-    );
+    // Top Customer (within range)
+    const [topCustomer] = await db.promise().query(`
+      SELECT u.name, COUNT(*) AS total_orders
+      FROM \`order\` o
+      JOIN users u ON o.user_id = u.user_id
+      WHERE o.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+      GROUP BY o.user_id
+      ORDER BY total_orders DESC
+      LIMIT 1
+    `, [range]);
+    stats.topCustomer = topCustomer[0] || null;
 
-    res.json({
-      totalOrders: totalOrders[0].count,
-      completedOrders: completedOrders[0].count,
-      canceledOrders: canceledOrders[0].count,
-      revenue: Number(revenue[0].total || 0),
-      topBook: topBook[0] || null,
-      topCustomer: topCustomer[0] || null,
-    });
+    res.json(stats);
   } catch (err) {
     console.error("Stats error:", err);
-    res.status(500).json({ message: 'Error fetching statistics', error: err });
+    res.status(500).json({ message: "Failed to load stats" });
   }
+});
+
+//For Testing the Dates(7,30,90 days)
+router.post('/fake-dates', async (req, res) => {
+  const db = require('../dbSingleton').getConnection().promise();
+  await db.query(`
+    UPDATE \`order\`
+    SET order_date = DATE_SUB(CURDATE(), INTERVAL FLOOR(RAND() * 30) DAY)
+  `);
+  res.json({ message: "Fake dates set!" });
 });
 
 module.exports = router;

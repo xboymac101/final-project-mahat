@@ -10,15 +10,19 @@ export default function ShoppingCart() {
   const [showPopup, setShowPopup] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    axios.get('/api/auth/me', { withCredentials: true })
-      .then(res => {
-        if (res.data.role === "Admin") setIsAdmin(true);
-      })
-      .catch(() => setIsAdmin(false));
+ useEffect(() => {
+  axios.get('/api/auth/me', { withCredentials: true })
+    .then(res => {
+      if (res.data.role === "Admin") {
+        setIsAdmin(true);
+      } else {
+        checkUserDetails(); 
+      }
+    })
+    .catch(() => setIsAdmin(false));
 
-    fetchCart(); 
-  }, []);
+  fetchCart(); 
+}, []);
 
   function fetchCart() {
     axios
@@ -172,11 +176,11 @@ console.log("Trying to add:", {
           </ul>
 
           <h3 className={classes["cart-total"]}>Total: ${total.toFixed(2)}</h3>
-          {total > 0 && (
-            <div className={classes["paypal-wrapper"]}>
-              <PayPalButton amount={total} cart={cart} setCart={setCart} />
-            </div>
-          )}
+          {total > 0 && !showPopup && (
+          <div className={classes["paypal-wrapper"]}>
+            <PayPalButton amount={total} cart={cart} setCart={setCart} />
+          </div>
+        )}
         </>
       )}
     </div>
