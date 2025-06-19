@@ -5,30 +5,87 @@
 .container {
   display: flex;
   margin-top: 1rem;
-  border-top: 1px solid #ccc;
+  border-top: 2px solid var(--forest-light);
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 1rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
 .sidebar {
   width: 30%;
-  border-right: 1px solid #ddd;
-  padding-right: 1rem;
+  border-right: 2px solid var(--forest-light);
+  padding: 1rem;
   max-height: 70vh;
   overflow-y: auto;
+  background-color: #f0fff0;
 }
 
 .detail {
   flex: 1;
-  padding-left: 2rem;
+  padding: 2rem;
+  background-color: #ffffff;
 }
 
-.messageItem {
-  padding: 0.5rem;
-  border-bottom: 1px solid #eee;
+/* כותרת הדף */
+.pageTitle {
+  font-size: 2.4rem;
+  font-weight: bold;
+  color: var(--forest-dark);
+  margin-bottom: 2rem;
+}
+
+.filterRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.2rem 1.6rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  width: fit-content;
+  align-items: center;
+}
+
+.filterRow button {
+  padding: 0.8rem 1.6rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid var(--leaf-accent);
+  background-color: white;
+  color: var(--forest-dark);
   cursor: pointer;
+  transition: all 0.25s ease;
+  min-width: 110px;
+  text-align: center;
+}
+
+.filterRow button:hover {
+  background-color: var(--leaf-accent);
+  color: white;
+}
+
+/* כפתור פעיל */
+.filterRow .active {
+  background-color: var(--leaf-accent);
+  color: white;
+  border: 2px solid var(--leaf-accent);
+}
+
+/* הודעות */
+.messageItem {
+  padding: 1rem;
+  border-radius: 0.8rem;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .messageItem:hover {
-  background-color: #f5f5f5;
+  background-color: var(--lavender-bg);
 }
 
 .replied {
@@ -38,36 +95,31 @@
 .status {
   margin-top: 0.5rem;
   font-weight: bold;
-  color: green;
+  color: var(--forest-dark);
 }
 
+/* textarea + כפתור שליחה */
 textarea {
   width: 100%;
-  padding: 0.5rem;
+  padding: 1rem;
   margin-top: 1rem;
+  border: 1px solid var(--leaf-accent);
+  border-radius: 0.5rem;
+  resize: vertical;
 }
 
 button {
-  margin-top: 0.5rem;
-  padding: 0.4rem 1rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1.4rem;
   font-weight: bold;
-}
-
-.filterRow {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.filterRow button {
-  padding: 0.3rem 0.8rem;
-  border: 1px solid #ccc;
-  background: #fff;
+  background-color: var(--leaf-accent);
+  color: white;
+  border: none;
+  border-radius: 0.6rem;
   cursor: pointer;
+  transition: background 0.3s;
 }
 
-.filterRow .active {
-  background-color: #333;
-  color: #fff;
-  border-color: #333;
+button:hover {
+  background-color: var(--forest-dark);
 }
