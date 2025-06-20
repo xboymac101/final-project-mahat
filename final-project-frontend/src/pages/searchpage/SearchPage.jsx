@@ -61,7 +61,7 @@ export default function SearchPage() {
             ? '🔥 Discounted Books'
             : mustOnly
             ? '📖 Must Read Books'
-            : '📚 All Books'}
+            : '📚 Best Sellers'}
         </h2>
 
         {loading ? (
