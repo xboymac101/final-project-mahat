@@ -61,12 +61,12 @@ function Header({ setIsLoggedIn }) {
     <header>
       <div className='container'>
         <div className='header__wrap'>
-  <div className='logo'>
-    <NavLink to='/books' className='menu-item'>
-      <img src={logo} alt='logo' />
-      <span className='slogan'>BookHaven</span>
-    </NavLink>
-  </div>
+        <div className='logo'>
+        <NavLink to='/' className='menu-item'>
+          <img src={logo} alt='logo' />
+          <span className='slogan'>BookHaven</span>
+        </NavLink>
+      </div>
 
 
           <div className={styles.navSearchWrap}>
@@ -108,17 +108,18 @@ function Header({ setIsLoggedIn }) {
                       className={styles.hammer}
                     />
                     {showAdminMenu && (
-                      <div className={styles.adminDropdown}>
-                        <button onClick={() => handleAdminSelect('/admin/orders')}>📦 Orders</button>
-                        <button onClick={() => handleAdminSelect('/admin/email-replies')}>📧 Email Replies</button>
-                        {role === 'Admin' && (
-                          <>
-                            <button onClick={() => handleAdminSelect('/admin/stats')}>📊 Statistics</button>
-                            <button onClick={() => handleAdminSelect('/admin/discounts')}>💸 Manage Discounts</button>
-                          </>
-                        )}
-                      </div>
-                    )}
+                          <div className={styles.dropdownMenu}>
+                            <button onClick={() => handleAdminSelect('/admin/orders')}>📦 Orders</button>
+                            <button onClick={() => handleAdminSelect('/admin/email-replies')}>📧 Email Replies</button>
+                            {role === 'Admin' && (
+                              <>
+                                <button onClick={() => handleAdminSelect('/admin/stats')}>📊 Statistics</button>
+                                <button onClick={() => handleAdminSelect('/admin/discounts')}>💸 Manage Discounts</button>
+                              </>
+                            )}
+                        </div>
+                      )}
+
                   </li>
                 )}
 
@@ -130,11 +131,11 @@ function Header({ setIsLoggedIn }) {
                       onClick={() => setShowUserMenu(!showUserMenu)}
                     />
                     {showUserMenu && (
-                      <div className={styles.userDropdown}>
-                        <button onClick={() => navigate('/edit-profile')}>🛠 Edit Profile</button>
-                        <button onClick={handleLogout}>🚪 Logout</button>
-                      </div>
-                    )}
+                        <div className={styles.dropdownMenu}>
+                          <button onClick={() => navigate('/edit-profile')}>🛠 Edit Profile</button>
+                          <button onClick={handleLogout}>🚪 Logout</button>
+                        </div>
+                      )}
                   </li>
                 )}
               </ul>

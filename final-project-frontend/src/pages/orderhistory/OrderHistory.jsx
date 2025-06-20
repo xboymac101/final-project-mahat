@@ -12,26 +12,31 @@ export default function OrderHistory() {
   }, []);
 
   return (
-    <div className={styles.ordersContainer}>
+    <div className={styles.container}>
       <h2>My Orders</h2>
-      {orders.length === 0 ? (
-        <p>No orders yet.</p>
-      ) : (
-    orders.map((order, index) => (
-        <div key={order.order_id} className={styles.orderCard}>
-            <p className={styles.orderTitle}>
-            Order #{order.order_id} (Your {index + 1}{['st','nd','rd'][index] || 'th'} order) – {order.status}
-            </p>
-            <ul>
-              {order.items.map(item => (
-                <li key={item.item_id} className={styles.orderItem}>
-                  {item.title} - {item.type} × {item.quantity} (${item.price})
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      )}
+      <div className={styles.scrollArea}>
+        {orders.length === 0 ? (
+          <p>No orders yet.</p>
+        ) : (
+          orders.map((order, index) => (
+            <div key={order.order_id} className={styles.orderCard}>
+              <p className={styles.orderTitle}>
+                Order #{order.order_id} (Your {index + 1}{['st','nd','rd'][index] || 'th'} order) – {order.status}
+              </p>
+              <ul className={styles.orderItems}>
+                {order.items.map(item => (
+                  <li key={item.item_id} className={styles.orderItem}>
+                    <span className={styles.bookTitle}>{item.title}</span>
+                    <span className={styles.itemType}>{item.type === 'rent' ? 'Rent' : 'Buy'}</span>
+                    × <span className={styles.itemQty}>{item.quantity}</span>
+                    <span className={styles.itemPrice}>${item.price}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }

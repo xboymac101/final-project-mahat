@@ -18,14 +18,16 @@ function App() {
 
   return (
     <div className="app-wrapper">
-      <BrowserRouter>
-        <CartProvider isLoggedIn={isLoggedIn}>
-          {isLoggedIn && <Header setIsLoggedIn={setIsLoggedIn} />}
-          <MyRoutes isLoggedIn={isLoggedIn} />
-          {isLoggedIn && <Footer isLoggedIn={isLoggedIn} />}
-        </CartProvider>
-      </BrowserRouter>
-    </div>
+  <BrowserRouter>
+    <CartProvider isLoggedIn={isLoggedIn}>
+      {isLoggedIn && <Header setIsLoggedIn={setIsLoggedIn} />}
+      <div className="main-content">
+        <MyRoutes isLoggedIn={isLoggedIn} />
+      </div>
+      {isLoggedIn && <Footer isLoggedIn={isLoggedIn} />}
+    </CartProvider>
+  </BrowserRouter>
+</div>
   );
 }
 

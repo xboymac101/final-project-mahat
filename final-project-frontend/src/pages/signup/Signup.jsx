@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import classes from "./signup.module.css";
-
+import logo from '../../assets/img/logo.png';
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,14 +15,14 @@ export default function Signup() {
   function checkSignup(e) {
     e.preventDefault();
 
-    // בדיקה אם הסיסמאות תואמות
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       setSuccess("");
       return;
     }
 
-    // שליחה לשרת
+ 
     axios.post('/api/auth/register', {
       name,
       email,
@@ -46,7 +46,7 @@ export default function Signup() {
   return (
     <div className={classes.signupContainer}>
       <h2 className={classes.signupTitle}>Sign Up</h2>
-      <img src="/logo.png" alt="logo" className={classes.signupLogo} />
+      <img src={logo} alt="logo" className={classes.signupLogo} />
 
       <form onSubmit={checkSignup}>
         <label>Name</label>
@@ -88,7 +88,7 @@ export default function Signup() {
         {error && <div className={classes.errorBox}>{error}</div>}
         {success && <div className={classes.successBox}>{success}</div>}
 
-        <button type="submit">Sign up</button>
+        <button className="SignupButton" type="submit">Sign up</button>
       </form>
 
       <p className="login-footer">

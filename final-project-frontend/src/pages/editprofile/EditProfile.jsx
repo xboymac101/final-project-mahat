@@ -37,25 +37,35 @@ export default function EditProfile() {
   }
 
   return (
-    <div className={classes.profileContainer}>
-      <h2>Edit Profile</h2>
-      <form onSubmit={handleSubmit} className={classes.profileForm}>
+    <div className={classes.editProfileContainer}>
+    <h2>Edit Profile</h2>
+    <form onSubmit={handleSubmit} className={classes.profileForm}>
+      <div className={classes.formGroup}>
         <label>Name:
           <input name="name" value={user.name || ''} onChange={handleChange} required />
         </label>
+      </div>
+      <div className={classes.formGroup}>
         <label>Email:
           <input name="email" type="email" value={user.email || ''} onChange={handleChange} required />
         </label>
+      </div>
+      <div className={classes.formGroup}>
         <label>Phone:
           <input name="phone_number" value={user.phone_number || ''} onChange={handleChange} />
         </label>
+      </div>
+      <div className={classes.formGroup}>
         <label>Address:
           <input name="address" value={user.address || ''} onChange={handleChange} />
         </label>
+      </div>
+      <div className={classes.buttonRow}>
         <button type="submit">Save Changes</button>
-        <button type="button" onClick={handleLogout} className={classes.logoutBtn}>Logout</button>
-        {message && <div className={classes.message}>{message}</div>}
-      </form>
-    </div>
+      </div>
+      {message && <div className={classes.message}>{message}</div>}
+    </form>
+  </div>
+
   );
 } 

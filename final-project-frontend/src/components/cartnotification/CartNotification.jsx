@@ -12,8 +12,7 @@ export function CartProvider({ children }) {
     axios.get("/api/cart", { withCredentials: true })
       .then(res => {
         
-        const totalItems = res.
-        data.reduce((sum, item) => sum + item.amount, 0); 
+        const totalItems = res.data.reduce((sum, item) => sum + item.amount, 0); 
         setCartCount(totalItems);
       })
       .catch(() => setCartCount(0));

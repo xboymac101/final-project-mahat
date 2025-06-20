@@ -1,0 +1,64 @@
+.wrapper {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+
+.card {
+  background: var(--cream-bg);
+  border-radius: 2.4rem;
+  box-shadow: 0 8px 32px rgba(46, 125, 50, 0.11);
+  padding: 3.5rem 2.2rem 2.5rem 2.2rem;
+  max-width: 380px;
+  width: 95%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border: 1.5px solid var(--forest-light);
+}
+
+.icon {
+  font-size: 4rem;
+  color: var(--forest-dark);
+  margin-bottom: 0.2em;
+}
+
+.heading {
+  font-size: 2.3rem;
+  color: var(--forest-dark);
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.3em;
+}
+
+.text {
+  font-size: 1.2rem;
+  color: var(--earth-brown);
+  margin-bottom: 0.7em;
+  line-height: 1.6;
+}
+
+.redirect {
+  color: var(--leaf-accent);
+  font-size: 1.08rem;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 1.2rem;
+  padding: 0.7rem 2.1rem;
+  background: var(--forest-dark);
+  color: var(--text-light);
+  border-radius: 1.2rem;
+  font-size: 1.09rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.btn:hover {
+  background: var(--leaf-accent);
+}

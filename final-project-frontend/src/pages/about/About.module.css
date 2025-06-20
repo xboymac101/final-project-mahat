@@ -1,7 +1,12 @@
 .aboutContainer {
-  background: #f9f7f2;
+    padding: 32px 0;
   min-height: 100vh;
-  padding: 40px 0;
+  background-color: var(--cream-bg);
+  background-image: url("../../assets/img/LeafBackground.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   font-family: 'Inter', Arial, sans-serif;
 }
 

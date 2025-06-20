@@ -1,16 +1,29 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import styles from "./ThankYou.module.css"; // create this css file
 
 export default function ThankYou() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/books");
-    }, 4000); // 4 seconds
-
+      navigate("/");
+    }, 4000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigate]);
 
-  return <h2>✅ Thank you! Your order was placed successfully. Redirecting to home...</h2>;
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.card}>
+        <div className={styles.icon}>🌿</div>
+        <h2 className={styles.heading}>Thank You for Your Order!</h2>
+        <p className={styles.text}>
+          Your order was placed successfully.<br />
+          You’ll receive a confirmation email soon.
+        </p>
+        <p className={styles.redirect}>Redirecting you to the homepage...</p>
+        <Link to="/" className={styles.btn}>Back to Home Now</Link>
+      </div>
+    </div>
+  );
 }

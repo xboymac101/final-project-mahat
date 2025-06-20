@@ -13,7 +13,7 @@ export default function Footer() {
           <span title="Email">✉️ projectbookhaven@gmail.com</span>
         </div>
 
-        <p>Open daily · Delivery available · Rent & Buy your favorite books</p>
+        <p>Open daily  · Rent & Buy your favorite books</p>
         <p>© {new Date().getFullYear()} BookHaven. All rights reserved.</p>
       </div>
     </footer>
