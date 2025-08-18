@@ -10,20 +10,33 @@ const {
   isAdminOrStaff
 } = require('./authMiddleware');
 
+const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*._-])[A-Za-z\d!@#$%^&*._-]{8,}$/;
+
 // רישום משתמש חדש
 router.post('/register', (req, res) => {
   const { name, email, password, role } = req.body;
-  // Hash the password first
+
+  // 1) Validate password pattern
+  if (!PASSWORD_REGEX.test(password)) {
+    return res.status(400).json({
+      message:
+        "Password must be at least 8 characters long and include: 1 uppercase, 1 lowercase, 1 number, and 1 special character (!@#$%^&*._-)."
+    });
+  }
+
+  // 2) Hash the password if valid
   bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
       console.error('Hashing error:', err);
       return res.status(500).json({ message: 'Encryption error' });
     }
+
     const query = `
       INSERT INTO users (name, email, password, registration_date, role)
       VALUES (?, ?, ?, CURDATE(), ?)
     `;
-    db.query(query, [name, email, hashedPassword, role], (err, result) => {
+    db.query(query, [name, email, hashedPassword, role], (err) => {
       if (err) {
         console.error('Registration error:', err);
         return res.status(500).json({ message: 'Server error' });

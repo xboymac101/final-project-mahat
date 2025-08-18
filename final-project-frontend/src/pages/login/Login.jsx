@@ -15,35 +15,31 @@ export default function Login() {
     checkLogin();
   };
 
-function checkLogin() {
-  axios.post('/api/auth/login', {
-    email,
-    password
-  }, { withCredentials: true })
-    .then((res) => {
+  function checkLogin() {
+    axios.post('/api/auth/login', { email, password }, { withCredentials: true })
+      .then((res) => {
+        setTimeout(() => {
+          const role = res.data.user?.role;
+          if (role === "Admin") {
+            window.location.href = "/admin/orders";
+          } else {
+            window.location.href = "/";
+          }
+        });
+      })
+      .catch((err) => {
+        console.error("Login error:", err);
+        const message = err.response?.data?.message || "Login failed. Please try again.";
+        setError(message);
+      });
+  }
 
-      setTimeout(() => {
-        const role = res.data.user?.role;
-        if (role === "Admin") {
-  window.location.href = "/admin/orders"; 
-} else {
-  window.location.href = "/";        
-}
-      }); 
-    })
-    .catch((err) => {
-      console.error("Login error:", err);
-      const message =
-        err.response?.data?.message || "Login failed. Please try again.";
-      setError(message);
-    });
-}
   return (
     <div className={classes.loginContainer}>
       <h2 className={classes.loginTitle}>Login</h2>
       <img src={logo} alt="logo" className={classes.loginLogo} />
 
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} autoComplete="on">
         <label>Email</label>
         <input
           type="email"
@@ -51,6 +47,7 @@ function checkLogin() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
 
         <label>Password</label>
@@ -60,6 +57,7 @@ function checkLogin() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
 
         <button type="submit">Sign in</button>
