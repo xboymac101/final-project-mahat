@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/img/logo.png';
-import { FaShoppingCart, FaHammer, FaCog, FaSearch } from 'react-icons/fa';
+import { FaShoppingCart, FaHammer, FaCog } from 'react-icons/fa';
 import { useCart } from '../components/cartnotification/CartNotification';
 import axios from 'axios';
 import styles from './header.module.css';
@@ -13,7 +13,6 @@ function Header({ setIsLoggedIn }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { cartCount } = useCart();
-  const isStaff = role === 'Staff';
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -132,7 +131,7 @@ function Header({ setIsLoggedIn }) {
                     />
                     {showUserMenu && (
                         <div className={styles.dropdownMenu}>
-                          <button onClick={() => navigate('/edit-profile')}>🛠 Edit Profile</button>
+                          <button onClick={() => navigate('/profile')}>🛠 Profile</button>
                           <button onClick={handleLogout}>🚪 Logout</button>
                         </div>
                       )}

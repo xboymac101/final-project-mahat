@@ -18,6 +18,7 @@ import EditBooks from '../components/editbooks/EditBooks';
 import Discounts from '../pages/discounts/Discounts';
 import StaffEmailReplies from "../pages/staffemailreplies/StaffEmailReplies";
 import SearchPage from '../pages/searchpage/SearchPage'; 
+import Profile from "../pages/profile/Profile";
 
 function MyRoutes({ isLoggedIn }) {
   return (
@@ -45,6 +46,7 @@ function MyRoutes({ isLoggedIn }) {
           <Route path="/admin/orders" element={<ProtectedRoute requireStaffOrAdmin={true}><Orders /></ProtectedRoute>} />
           <Route path="/admin/email-replies" element={<ProtectedRoute requireStaffOrAdmin={true}><StaffEmailReplies /></ProtectedRoute>} />
           <Route path="/admin/stats" element={<ProtectedRoute requireAdmin={true}><Stats /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         </>
       )}
     </Routes>
