@@ -46,46 +46,116 @@ router.post('/register', (req, res) => {
   });
 });
 // התחברות
+// התחברות (3 tries per day)
 router.post("/login", (req, res) => {
-  const { email, password } = req.body;
-  const query = `SELECT * FROM users WHERE email = ?`;
+  const rawEmail = req.body.email || "";
+  const email = rawEmail.toLowerCase().trim();
+  const { password } = req.body;
 
-  db.query(query, [email], (err, results) => {
+  // 1) check attempts for today
+  const getAttemptsQ = `
+    SELECT attempts, locked_until
+    FROM auth_login_attempts
+    WHERE email = ? AND attempt_date = CURDATE()
+    LIMIT 1
+  `;
+
+  db.query(getAttemptsQ, [email], (err, rows) => {
     if (err) {
-      console.error("Login error:", err);
+      console.error("Login attempts read error:", err);
       return res.status(500).json({ message: "Server error" });
     }
-    if (results.length === 0) {
-      return res.status(401).json({ message: "Invalid email or password" });
+
+    const nowLock = rows[0]?.locked_until && new Date(rows[0].locked_until) > new Date();
+    const attemptsSoFar = rows[0]?.attempts || 0;
+
+    if (nowLock || attemptsSoFar >= 3) {
+      // already locked for today
+      return res.status(429).json({
+        message:
+          "Too many login attempts. Please try again after midnight (local time)."
+      });
     }
 
-    const hashedPassword = results[0].password;
-    // Compare the provided password to the hashed password
-    bcrypt.compare(password, hashedPassword, (err, isMatch) => {
+    // 2) proceed to find user by email
+    const userQ = `SELECT * FROM users WHERE email = ?`;
+    db.query(userQ, [email], (err, results) => {
       if (err) {
-        console.error('Bcrypt compare error:', err);
-        return res.status(500).json({ message: 'Encryption error' });
+        console.error("Login error:", err);
+        return res.status(500).json({ message: "Server error" });
       }
-      if (isMatch) {
-        req.session.user_id = results[0].user_id;
-        req.session.role = results[0].role;
 
-        res.status(200).json({
-          message: "Login successful",
-          user: {
-            id: results[0].user_id,
-            name: results[0].name,
-            email: results[0].email,
-            role: results[0].role,
-          },
+      const user = results[0];
+
+      // helper to record a failed attempt (and possibly lock until midnight)
+      const recordFailure = () => {
+        const newAttempts = attemptsSoFar + 1;
+        const upsertQ = `
+          INSERT INTO auth_login_attempts (email, attempt_date, attempts, locked_until, last_attempt_at)
+          VALUES (?, CURDATE(), 1, NULL, NOW())
+          ON DUPLICATE KEY UPDATE
+            attempts = attempts + 1,
+            last_attempt_at = NOW(),
+            locked_until = CASE
+              WHEN attempts + 1 >= 3 THEN DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+              ELSE NULL
+            END
+        `;
+        db.query(upsertQ, [email], (err2) => {
+          if (err2) console.error("Login attempts write error:", err2);
+          // If after this failure we hit 3, tell the user they're locked
+          if (newAttempts >= 3) {
+            return res.status(429).json({
+              message:
+                "Too many login attempts. Please try again after midnight (local time)."
+            });
+          } else {
+            return res.status(401).json({
+              message: `Invalid email or password. (${3 - newAttempts} attempts left today)`
+            });
+          }
         });
-      } 
-      else {
-        res.status(401).json({ message: "Invalid email or password" });
+      };
+
+      if (!user) {
+        // email not found counts as a failed attempt
+        return recordFailure();
       }
+
+      // 3) compare password
+      bcrypt.compare(password, user.password, (err2, isMatch) => {
+        if (err2) {
+          console.error("Bcrypt compare error:", err2);
+          return res.status(500).json({ message: "Encryption error" });
+        }
+
+        if (!isMatch) {
+          return recordFailure();
+        }
+
+        // 4) success: clear today’s attempts for this email
+        const clearQ = `DELETE FROM auth_login_attempts WHERE email = ? AND attempt_date = CURDATE()`;
+        db.query(clearQ, [email], (clearErr) => {
+          if (clearErr) console.error("Clear attempts error:", clearErr);
+          // set session
+          req.session.user_id = user.user_id;
+          req.session.role = user.role;
+
+          return res.status(200).json({
+            message: "Login successful",
+            user: {
+              id: user.user_id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+            },
+          });
+        });
+      });
     });
   });
 });
+
 
 router.post("/logout", (req, res) => {
   req.session.destroy((err) => {
