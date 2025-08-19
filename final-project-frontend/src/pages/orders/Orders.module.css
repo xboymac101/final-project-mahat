@@ -38,8 +38,8 @@
 
 .searchInput,
 .selectInput {
-  padding: 8px 12px;
-  font-size: 1rem;
+  padding: 10px 15px;
+  font-size: 1.2rem;
   border-radius: 6px;
   border: 1px solid #ccc;
   min-width: 220px;
@@ -47,7 +47,7 @@
 
 .resetButton {
   padding: 8px 14px;
-  font-size: 0.95rem;
+  font-size: 1.5rem;
   border: none;
   border-radius: 6px;
   background-color: #999;
@@ -106,7 +106,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 2rem;
   font-weight: bold;
   margin-top: 8px;
   transition: background-color 0.2s ease;
