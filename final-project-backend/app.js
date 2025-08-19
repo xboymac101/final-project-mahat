@@ -17,7 +17,7 @@ const categoriesRoutes = require("./routes/categories");
 const emailRoutes = require('./routes/email');
 const staffEmailRoutes = require('./routes/staffemail');
 const factsRoute = require('./routes/facts')
-
+const profileRoutes = require('./routes/profilestats')
 
 
 
@@ -49,6 +49,7 @@ app.use("/api/books", booksRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/facts", factsRoute);
 app.use("/api/categories", categoriesRoutes)
+app.use("/api/profile/stats", profileRoutes)
 app.use("/api/admin", managementRoutes); // includes /admin/orders (Staff+Admin)
 app.use("/api/admin", adminStatsRoutes); // includes /admin/stats (Admin only)
 app.use("/api/order", createOrderRoute); // placing orders
