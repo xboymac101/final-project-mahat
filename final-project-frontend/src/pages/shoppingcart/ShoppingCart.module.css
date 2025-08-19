@@ -1,7 +1,8 @@
 .cart-container {
   /* Bigger, card-like, modern look */
-  max-width: 560px;            /* Was 420px; now much wider! */
+  max-width: 800px;            /* Was 420px; now much wider! */
   min-width: 340px;
+  width: 100%;
   margin: 60px auto 60px auto; /* More vertical space */
   background: #fff;
   border-radius: 2.4rem;
@@ -71,7 +72,7 @@
 }
 
 .cart-item-title {
-  font-size: 1.26rem;
+  font-size: 1.8rem;
   font-weight: 700;
   color: var(--forest-dark);
   margin-bottom: 2px;
@@ -83,7 +84,7 @@
   background: #e2f4e9;
   padding: 0 12px;
   border-radius: 12px;
-  font-size: 1.04rem;
+  font-size: 1.3rem;
   margin-left: 8px;
   vertical-align: middle;
 }
@@ -92,7 +93,7 @@
   display: flex;
   align-items: center;
   gap: 1.1rem;
-  font-size: 1.13rem;
+  font-size: 1.8rem;
   color: #555;
   margin-top: 4px;
 }
@@ -101,7 +102,7 @@
 .inc-btn {
   width: 38px;
   height: 38px;
-  font-size: 1.32rem;
+  font-size: 1.5rem;
   border: none;
   background: var(--leaf-accent);
   color: #fff;
@@ -130,7 +131,7 @@
 .cart-item-amount {
   font-weight: 800;
   color: var(--forest-dark);
-  font-size: 1.27rem;
+  font-size: 1.5rem;
   margin: 0 12px;
   min-width: 36px;
   text-align: center;
@@ -148,7 +149,7 @@
   color: #555;
   border: none;
   border-radius: 11px;
-  font-size: 1.09rem;
+  font-size: 1.5rem;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s, color 0.13s;
@@ -163,7 +164,7 @@
 .cart-total {
   text-align: right;
   margin-top: 30px;
-  font-size: 1.28rem;
+  font-size: 1.8rem;
   color: #234c33;
   font-weight: bold;
   letter-spacing: 0.02em;
@@ -174,7 +175,7 @@
   padding: 13px 22px;
   background-color: #ffcc80;
   color: #25513d;
-  font-size: 1.17rem;
+  font-size: 1.5rem;
   border: none;
   border-radius: 7px;
   cursor: pointer;
@@ -189,6 +190,7 @@
 
 .paypal-wrapper {
   margin-top: 24px;
+  width: 100%;
   max-width: 440px;
   margin-left: auto;
   margin-right: auto;

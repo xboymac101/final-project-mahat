@@ -32,14 +32,14 @@ form label {
   font-weight: 600;
   text-align: left;
   color: #333;
-  font-size: 1.2rem;
+  font-size: 1.9rem;
 }
 
 form input {
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: 1.4rem;
+  font-size: 1.9rem;
   background-color: #f9f9f9;
 }
 
