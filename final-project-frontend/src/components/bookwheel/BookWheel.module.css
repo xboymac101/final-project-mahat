@@ -57,31 +57,47 @@
 }
 
 .arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #fff;
+  color: var(--forest-dark); /* or #2e7d32 */
+  background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 50%;
   font-size: 1.6rem;
   width: 36px;
   height: 36px;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   transition: all 0.2s ease-in-out;
   z-index: 2;
 }
 
 .arrow:hover {
-  background-color: #f0f0f0;
-  transform: translateY(-50%) scale(1.1);
+  background-color: var(--forest-light);
+  color: var(--text-light); /* optional for hover contrast */
 }
-
 .arrowLeft {
   left: 0.5rem;
 }
 
 .arrowRight {
   right: 0.5rem;
+}
+
+.seeAll {
+  display: inline-block;
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: var(--leaf-accent); /* from your forest theme */
+  color: var(--text-light);
+  padding: 0.6rem 1.4rem;
+  border-radius: 2rem;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.seeAll:hover {
+  background-color: var(--forest-dark);
+  text-decoration: none;
+  color: var(--text-light);
 }
 

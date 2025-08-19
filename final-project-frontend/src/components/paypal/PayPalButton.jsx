@@ -1,43 +1,71 @@
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function PayPalButton({ amount, cart, setCart, fetchCartCount }) {
+export default function PayPalButton({ amount, setCart, fetchCartCount }) {
   const clientId = process.env.REACT_APP_PAYPAL_CLIENT_ID;
   const navigate = useNavigate();
 
+  const amountStr = useMemo(() => {
+    const n = typeof amount === "number" ? amount : parseFloat(amount || 0);
+    return (isFinite(n) ? n : 0).toFixed(2);
+  }, [amount]);
+
+  if (!clientId) {
+    console.error("Missing REACT_APP_PAYPAL_CLIENT_ID");
+    return <div style={{ color: "crimson" }}>⚠️ PayPal client ID missing.</div>;
+  }
+
   return (
-    <PayPalScriptProvider options={{ "client-id": clientId }}>
+    <PayPalScriptProvider
+      options={{
+        "client-id": clientId,
+        currency: "USD",
+        intent: "capture",
+        components: "buttons",
+      }}
+    >
       <PayPalButtons
         style={{ layout: "vertical" }}
+        forceReRender={[amountStr]}
         createOrder={(data, actions) => {
+          if (parseFloat(amountStr) <= 0) {
+            return Promise.reject(new Error("Amount must be greater than zero"));
+          }
           return actions.order.create({
-            purchase_units: [
-              {
-                amount: { value: amount.toFixed(2) },
-                description: "Book Order",
-              },
-            ],
+            purchase_units: [{ amount: { value: amountStr }, description: "Book Order" }],
           });
         }}
-       onApprove={(data, actions) => {
-        return actions.order.capture().then((details) => {
-          setTimeout(() => {
+        onApprove={(data, actions) =>
+          actions.order.capture().then((details) =>
             fetch("/api/order/create", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               credentials: "include",
-              body: JSON.stringify({ cart, paymentDetails: details }),
+              body: JSON.stringify({ paymentDetails: details }),
             })
-              .then(res => res.json())
+              .then(async (res) => {
+                if (!res.ok) {
+                  const b = await res.json().catch(() => ({}));
+                  throw new Error(b.message || `Order creation failed (${res.status})`);
+                }
+                return res.json();
+              })
               .then(() => {
                 setCart([]);
-                fetchCartCount(); 
+                fetchCartCount?.();
                 navigate("/thank-you");
               })
-              .catch(() => alert("Payment succeeded but order creation failed."));
-          }, 300);
-        });
-      }}
+              .catch((err) => {
+                console.error("[/api/order/create]", err);
+                alert(err.message || "Payment succeeded but order creation failed.");
+              })
+          )
+        }
+        onError={(err) => {
+          console.error("[PayPal onError]", err);
+          alert("PayPal failed to initialize. Check console for details.");
+        }}
       />
     </PayPalScriptProvider>
   );

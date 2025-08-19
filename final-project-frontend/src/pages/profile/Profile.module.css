@@ -1,0 +1,159 @@
+.page {
+  padding: 24px 16px;
+}
+
+.card {
+  max-width: 960px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  padding: 24px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e2f4e9;
+  color: #0c3b2e;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 22px;
+  box-shadow: inset 0 0 0 2px #2d8659;
+}
+
+.titleBlock {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  color: #12304b;
+}
+
+.subtitle {
+  margin: 2px 0 0;
+  color: #567;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.primaryBtn,
+.warnBtn,
+.ghostBtn {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primaryBtn {
+  background: #2d8659;
+  color: #fff;
+}
+
+.warnBtn {
+  background: #ffe5e5;
+  color: #9a1a1a;
+}
+
+.ghostBtn {
+  background: transparent;
+  color: #2d8659;
+  border: 2px solid #2d8659;
+}
+
+.success {
+  background: #e6ffed;
+  color: #186a3b;
+  border-left: 6px solid #2d8659;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin: 8px 0 16px;
+}
+
+.form { margin-top: 8px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field > span {
+  font-size: 14px;
+  color: #12304b;
+  font-weight: 600;
+}
+
+.field input {
+  padding: 10px 12px;
+  border: 1.6px solid #d6e4da;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+.field input:disabled {
+  background: #f7faf8;
+  color: #556;
+}
+
+.full { grid-column: 1 / -1; }
+
+.editRow {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.loader {
+  padding: 24px;
+  text-align: center;
+}
+
+.quickLinks {
+  max-width: 960px;
+  margin: 16px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.linkCard {
+  display: block;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  font-weight: 600;
+  color: #0c3b2e;
+  border: 2px solid #e2f4e9;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+@media (max-width: 720px) {
+  .grid { grid-template-columns: 1fr; }
+  .actions { flex-wrap: wrap; }
+}

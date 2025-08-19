@@ -10,6 +10,7 @@
   border-radius: 1rem;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+  
 }
 
 .sidebar {
@@ -24,7 +25,8 @@
 .detail {
   flex: 1;
   padding: 2rem;
-  background-color: #ffffff;
+  background-color: #f0fff0;
+  
 }
 
 /* כותרת הדף */
@@ -77,10 +79,11 @@
   padding: 1rem;
   border-radius: 0.8rem;
   margin-bottom: 1rem;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: background 0.2s;
+  border: 2px solid var(--forest-light);
 }
 
 .messageItem:hover {
@@ -88,7 +91,7 @@
 }
 
 .replied {
-  background-color: #e0ffe0;
+  background-color: #76d876;
 }
 
 .status {

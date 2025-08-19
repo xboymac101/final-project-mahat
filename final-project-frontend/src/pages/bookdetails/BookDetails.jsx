@@ -55,44 +55,10 @@ function BookDetails() {
   }, [id]);
 
 const handleAddToCart = () => {
-  if (isAdmin) {
-    alert("Admins are not allowed to add items to the cart.");
-    return;
-  }
-
-  if (!book || !book.book_id) {
-    alert("Book details not loaded.");
-    return;
-  }
-
-  if (!quantity || quantity < 1) {
-    alert("Please select quantity.");
-    return;
-  }
-
-  if (type === "rent") {
-    axios.get("/api/cart", { withCredentials: true })
-      .then(res => {
-        const rentalTotal = res.data
-          .filter(item => item.type === "rent")
-          .reduce((sum, item) => sum + item.amount, 0);
-
-        const MAX_RENTALS = 5;
-        const totalAfterAdd = rentalTotal + quantity;
-
-        if (totalAfterAdd > MAX_RENTALS) {
-          alert(`You can only rent up to ${MAX_RENTALS} books. You currently have ${rentalTotal} in your cart.`);
-          return;
-        }
-
-        proceedAdd(); // proceed with actual add
-      })
-      .catch(() => {
-        alert("Failed to check your cart. Please try again.");
-      });
-  } else {
-    proceedAdd(); // for buy type
-  }
+  if (isAdmin) return alert("Admins are not allowed to add items to the cart.");
+  if (!book?.book_id) return alert("Book details not loaded.");
+  if (!quantity || Number(quantity) < 1) return alert("Please select quantity.");
+  proceedAdd(); // backend will return clear 409 messages if rules are violated
 };
 
 function handleReviewSubmit(e) {
@@ -155,20 +121,13 @@ function proceedAdd() {
           <div className={classes.desc}>{book.description}</div>
           <div className={classes.detail}><b>In Stock:</b> {book.count}</div>
           <div className={classes.price}>
-          <b>Price:</b>{' '}
-          {book.discount_percent ? (
-            <>
-              <span style={{ textDecoration: 'line-through', color: 'gray' }}>
-                ${book.price}
-              </span>{' '}
-              <span style={{ color: 'green', fontWeight: 'bold' }}>
-                ${book.final_price}
-              </span>
-            </>
-          ) : (
-            `$${book.price}`
-          )}
-        </div>
+            <b>Price:</b>{" "}
+            {(() => {
+              const base = Number(book.discount_percent ? book.final_price : book.price) || 0;
+              const shown = type === "rent" ? base / 2 : base;
+              return `$${shown.toFixed(2)}`;
+            })()}
+          </div>
 
           {book.count > 0 ? (
             <div style={{ margin: "15px 0" }}>

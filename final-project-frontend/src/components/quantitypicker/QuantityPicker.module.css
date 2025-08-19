@@ -12,12 +12,14 @@
 
 .button {
     border: none;
-    background-color: transparent;
+    background-color: green;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 10px;
+    
 }
 
 .count {
     font-size: 20px;
     font-weight: bold;
+    height: 22px;
 }

@@ -1,58 +1,62 @@
 .categoriesPage {
-  padding: 32px 0;
-  background: #fafbfc;
+  padding: 4rem 1rem;
   min-height: 100vh;
+}
+
+.categoriesWrapper {
+  background-color: #f1f8f4;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem;
 }
 
 .categoriesRow {
   display: flex;
-  gap: 18px;
-  justify-content: center;
-  margin-bottom: 30px;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .categoryPill,
 .activeCategory {
-  border: 2px solid #a99df4;
-  background: #fff;
-  color: #3c3975;
-  font-size: 1.05rem;
-  border-radius: 16px;
-  padding: 9px 26px;
+  padding: 0.6rem 1.6rem;
+  border: 2px solid #7c4dff;
+  border-radius: 20px;
+  font-size: 1.4rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.18s, color 0.18s;
-  margin-bottom: 8px;
+  background-color: #ffffff;
+  color: #7c4dff;
+  transition: all 0.2s ease;
 }
 
 .activeCategory {
-  background: #7c4dff;
+  background-color: #7c4dff;
   color: #fff;
-  border: 2px solid #7c4dff;
 }
 
 .contentArea {
   display: flex;
-  max-width: 1240px;
-  margin: 0 auto;
-  gap: 32px;
+  gap: 2rem;
 }
 
 .sidebar {
   min-width: 180px;
-  padding: 22px 10px;
-  background: #f2f2fb;
+  background-color: #ffffff;
   border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   height: fit-content;
-  margin-top: 0;
-  box-shadow: 0 2px 14px #0001;
 }
 
 .sidebarTitle {
-  margin-bottom: 18px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #403e7e;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #2e7d32;
 }
 
 .genresList {
@@ -62,85 +66,60 @@
 }
 
 .checkboxLabel {
-  font-size: 1rem;
-  color: #222;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  cursor: pointer;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  font-size: 1.3rem;
 }
 
 .booksGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px 24px;
   justify-content: center;
-  align-items: flex-start;
-  min-height: 400px;
+  max-width: 1100px;  
+  margin: 0 auto;
 }
 
 .bookCard {
-  width: 195px;
-  background: #fff;
+  background: #ffffff;
+  padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px #0002;
-  padding: 14px 10px 18px 10px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: box-shadow 0.17s;
-  height: auto;
-
+  transition: transform 0.2s ease;
 }
+
 .bookCard:hover {
-  box-shadow: 0 8px 24px #7c4dff22;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px #0001;
 }
 
 .bookImg {
-  width: 150px;
+  width: 100%;
   height: 200px;
   object-fit: cover;
-  margin: 0 auto 10px auto;
+  margin-bottom: 10px;
   border-radius: 8px;
   background: #eee;
 }
 
 .bookTitle {
-  font-weight: 600;
-  margin-bottom: 3px;
-  font-size: 1.06rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 4px;
 }
 
 .bookAuthor {
-  font-size: 0.97rem;
-  color: #4d4d5a;
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 6px;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 28px 0 0 0;
-}
-
-.pageBtn,
-.activePage {
-  background: #fff;
-  color: #574fd6;
-  border: 1px solid #d1d1ee;
-  border-radius: 6px;
-  padding: 7px 18px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s;
-}
-
-.activePage {
-  background: #7c4dff;
-  color: #fff;
-  border: 1.5px solid #7c4dff;
+.bookPrice {
+  font-weight: bold;
+  color: #198754;
 }
 
 .originalPrice {
@@ -154,12 +133,25 @@
   font-weight: bold;
 }
 
-.discountBanner {
-  background-color: #ffe8e8;
-  color: #a00000;
-  padding: 1rem 2rem;
-  margin-bottom: 1.5rem;
-  border-left: 5px solid red;
-  border-radius: 6px;
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pagination button {
+  background: #7c4dff;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: 500;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
