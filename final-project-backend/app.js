@@ -14,10 +14,11 @@ const orderHistoryRoutes = require("./routes/orderhistory");
 const rulesRoutes = require("./routes/rules");
 const adminDiscountRoutes = require("./routes/admindiscounts");
 const categoriesRoutes = require("./routes/categories");
-const emailRoutes = require('./routes/email');
 const staffEmailRoutes = require('./routes/staffemail');
 const factsRoute = require('./routes/facts')
 const profileRoutes = require('./routes/profilestats')
+
+const email = require('./routes/email');
 
 
 
@@ -56,11 +57,10 @@ app.use("/api/order", createOrderRoute); // placing orders
 app.use("/api/order", orderHistoryRoutes); // my-orders history
 app.use("/api/rules", rulesRoutes); // edit/view rules
 app.use("/api/admin/discounts", adminDiscountRoutes);
-app.use("/api/email", emailRoutes)
 app.use('/api/staff', staffEmailRoutes);
 
-
-
+app.use("/api/email", email.router);
+email.startCron();
 
 // Error handler (keep at the end)
 app.use((err, req, res, next) => {

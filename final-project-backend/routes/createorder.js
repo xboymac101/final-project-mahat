@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const dbSingleton = require("../dbSingleton");
 const db = dbSingleton.getConnection();
+const { sendReceipt } = require("./email");
 
 // ---- helpers ----
 function q(sql, params = []) {
@@ -118,6 +119,7 @@ router.post("/create", isLoggedIn, async (req, res) => {
     await q(`DELETE FROM shoppingcart WHERE user_id = ?`, [user_id]);
 
     await q("COMMIT");
+    sendReceipt(order_id).catch(console.error);
     res.json({ message: "Order created successfully", order_id, status: "Pending" });
   } catch (err) {
     console.error("[/api/order/create]", err);

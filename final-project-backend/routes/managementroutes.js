@@ -75,14 +75,18 @@ router.get('/orders', isAuthenticated, isAdminOrStaff, async (req, res) => {
 });
 
 // PUT update order 
+// PUT update order 
 router.put('/orders/:id', isAuthenticated, isAdminOrStaff, async (req, res) => {
   const db = require('../dbSingleton').getConnection().promise();
   const orderId = req.params.id;
   const { status, due_date } = req.body;
 
   try {
+    await db.query('START TRANSACTION');
+
+    // Load current rental due_date (first rental line is enough for your single-date UI)
     const [[{ due_date: currentDue } = {}] = []] = await db.query(
-      `SELECT due_date FROM order_items WHERE order_id = ? AND type = 'rent'`,
+      `SELECT due_date FROM order_items WHERE order_id = ? AND type = 'rent' LIMIT 1`,
       [orderId]
     );
 
@@ -91,47 +95,78 @@ router.put('/orders/:id', isAuthenticated, isAdminOrStaff, async (req, res) => {
       [orderId]
     );
 
-    if (!currentDue && extensions_used === undefined) {
+    if (currentDue === undefined && extensions_used === undefined) {
+      await db.query('ROLLBACK');
       return res.status(404).json({ message: "Order not found." });
     }
 
-    const oldDue = new Date(currentDue);
-    const newDue = new Date(due_date);
-    const now = new Date();
+    // --- Determine if this request is an EXTENSION (only if due_date is provided) ---
+    let isExtension = false;
+    if (due_date && currentDue) {
+      const oldDue = new Date(currentDue);
+      const newDue = new Date(due_date);
+      const now = new Date();
 
-    const isExtension = newDue > oldDue;
-    const isOverdue = oldDue < now;
-    const exceedsMaxPeriod = (newDue - oldDue) / (1000 * 60 * 60 * 24) > 30;
+      const tryingToExtend = newDue > oldDue;
+      const isOverdue = oldDue < newDue && oldDue < now; // overdue at time of request
+      const exceedsMaxPeriod = (newDue - oldDue) / (1000 * 60 * 60 * 24) > 30;
 
-    if (isExtension && isOverdue) {
-      return res.status(400).json({ message: "Cannot extend: rental is already overdue." });
+      if (tryingToExtend) {
+        // your rules
+        if (isOverdue) {
+          await db.query('ROLLBACK');
+          return res.status(400).json({ message: "Cannot extend: rental is already overdue." });
+        }
+        if (extensions_used >= 2) {
+          await db.query('ROLLBACK');
+          return res.status(400).json({ message: "Maximum of 2 extensions reached." });
+        }
+        if (exceedsMaxPeriod) {
+          await db.query('ROLLBACK');
+          return res.status(400).json({ message: "Cannot extend beyond 30 days from original date." });
+        }
+        isExtension = true;
+      }
     }
 
-    if (isExtension && extensions_used >= 2) {
-      return res.status(400).json({ message: "Maximum of 2 extensions reached." });
-    }
-
-    if (isExtension && exceedsMaxPeriod) {
-      return res.status(400).json({ message: "Cannot extend beyond 30 days from original date." });
-    }
-
-    await db.query(
-      `UPDATE \`order\` SET status = ?, extensions_used = extensions_used + ? WHERE order_id = ?`,
-      [status, isExtension ? 1 : 0, orderId]
-    );
-
-    if (isExtension) {
+    // --- Update order status (always allowed) ---
+    if (status) {
       await db.query(
-        `UPDATE order_items SET due_date = ? WHERE order_id = ? AND type = 'rent'`,
+        `UPDATE \`order\` SET status = ?, extensions_used = extensions_used + ? WHERE order_id = ?`,
+        [status, isExtension ? 1 : 0, orderId]
+      );
+
+      // If finalized, mark all rental items as returned so reminders stop
+      if (['Completed', 'Returned', 'Canceled'].includes(status)) {
+        await db.query(
+          `UPDATE order_items
+             SET returned_at = COALESCE(returned_at, NOW())
+           WHERE order_id = ? AND type = 'rent'`,
+          [orderId]
+        );
+      }
+    }
+
+    // --- If a due_date was provided, apply it to all OPEN rental lines ---
+    if (due_date) {
+      await db.query(
+        `UPDATE order_items
+           SET due_date = ?
+         WHERE order_id = ?
+           AND type = 'rent'
+           AND (returned_at IS NULL OR returned_at = '0000-00-00 00:00:00')`,
         [due_date, orderId]
       );
     }
 
+    await db.query('COMMIT');
     res.json({ message: "Order updated successfully." });
   } catch (err) {
+    try { await db.query('ROLLBACK'); } catch {}
     console.error("Admin order update error:", err);
     res.status(500).json({ message: "Failed to update order", error: err });
   }
 });
+
 
 module.exports = router;
