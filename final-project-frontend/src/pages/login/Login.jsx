@@ -8,6 +8,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
@@ -49,17 +50,38 @@ export default function Login() {
           required
           autoComplete="email"
         />
-
-        <label>Password</label>
-        <input
-          type="password"
+        <div style={{ position: "relative" }}>
+          <label>Password</label>
+          <input
+          type={show ? "text" : "password"}
           placeholder="Enter password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="current-password"
-        />
-
+          style={{ width: "100%", paddingRight: "2.25rem" }}
+          />
+         <button
+            type="button"
+            onClick={() => setShow(s => !s)}
+            aria-label={show ? "Hide password" : "Show password"}
+            title={show ? "Hide password" : "Show password"}
+            style={{
+              position: "absolute",
+              right: "8px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "1rem",
+              padding: "0 .25rem",
+              lineHeight: 1
+            }}
+          >
+            {show ? "🙈" : "👁️"}
+          </button>
+        </div>
         <button type="submit">Sign in</button>
       </form>
 
