@@ -1,10 +1,11 @@
-// components/paypal/PayPalButton.jsx
+
 import { PayPalButtons } from "@paypal/react-paypal-js";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function PayPalButton({ amount, setCart, fetchCartCount }) {
   const navigate = useNavigate();
+  const [payMsg, setPayMsg] = useState(""); // shows failed/canceled/success messages
 
   const amountStr = useMemo(() => {
     const n = typeof amount === "number" ? amount : parseFloat(amount || 0);
@@ -17,8 +18,9 @@ export default function PayPalButton({ amount, setCart, fetchCartCount }) {
     <div style={{ maxWidth: 420 }}>
       <PayPalButtons
         style={{ layout: "vertical" }}
-        forceReRender={[Number(amountStr)]} // rerenders buttons without reloading SDK
+        forceReRender={[Number(amountStr)]}
         createOrder={(data, actions) => {
+          setPayMsg(""); 
           return actions.order.create({
             purchase_units: [
               { amount: { value: amountStr }, description: "Book Order" },
@@ -26,36 +28,67 @@ export default function PayPalButton({ amount, setCart, fetchCartCount }) {
           });
         }}
         onApprove={(data, actions) =>
-          actions.order.capture().then((details) =>
-            fetch("/api/order/create", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-              body: JSON.stringify({ paymentDetails: details }),
+          actions.order
+            .capture()
+            .then((details) =>
+              fetch("/api/order/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ paymentDetails: details }),
+              })
+                .then(async (res) => {
+                  if (!res.ok) {
+                    const b = await res.json().catch(() => ({}));
+                    throw new Error(
+                      b.message || `Order creation failed (${res.status})`
+                    );
+                  }
+                  return res.json();
+                })
+                .then(() => {
+                  setCart?.([]);
+                  fetchCartCount?.();
+                  setPayMsg(""); 
+                  navigate("/thank-you");
+                })
+            )
+            .catch((err) => {
+              console.error("[onApprove flow]", err);
+              setPayMsg(
+                "Payment succeeded but finalizing your order failed. Your card wasn’t charged twice. Please contact support or try again."
+              );
             })
-              .then(async (res) => {
-                if (!res.ok) {
-                  const b = await res.json().catch(() => ({}));
-                  throw new Error(b.message || `Order creation failed (${res.status})`);
-                }
-                return res.json();
-              })
-              .then(() => {
-                setCart?.([]);
-                fetchCartCount?.();
-                navigate("/thank-you");
-              })
-              .catch((err) => {
-                console.error("[/api/order/create]", err);
-                alert(err.message || "Payment succeeded but order creation failed.");
-              })
-          )
         }
+        onCancel={() => {
+          setPayMsg("Payment was canceled before completion.");
+        }}
         onError={(err) => {
+          const dbg =
+            (err && (err.debug_id || err.debugId || err.debugID)) || null;
           console.error("[PayPal onError]", err);
-          alert("PayPal failed to initialize. Please try again.");
+          setPayMsg(
+            `Payment failed to initialize or complete.${
+              dbg ? " Debug ID: " + dbg + "." : ""
+            } Please try again or use another method.`
+          );
         }}
       />
+
+      
+      {payMsg && (
+        <p
+          style={{
+            marginTop: 10,
+            color: "crimson",
+            fontSize: 14,
+          }}
+          role="alert"
+          aria-live="polite"
+        >
+          {payMsg}
+        </p>
+      )}
     </div>
   );
 }
