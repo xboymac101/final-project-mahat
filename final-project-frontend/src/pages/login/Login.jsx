@@ -9,7 +9,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
-  const navigate = useNavigate();
+
 
   const handleLogin = (e) => {
     e.preventDefault();
