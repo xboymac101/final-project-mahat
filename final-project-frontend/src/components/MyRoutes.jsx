@@ -39,7 +39,7 @@ function MyRoutes({ isLoggedIn }) {
           <Route path="/my-orders" element={<ProtectedRoute requireRegularOnly={true}><OrderHistory /></ProtectedRoute>} />
           <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
           <Route path="/thank-you" element={<ProtectedRoute><ThankYou /></ProtectedRoute>} />
-          <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
+          <Route path="/about" element={<ProtectedRoute requireRegularOnly={true}><AboutPage /></ProtectedRoute>} />
           <Route path="/shoppingcart" element={<ProtectedRoute requireRegularOnly={true}><ShoppingCart /></ProtectedRoute>} />
           <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />
           <Route path="/admin/discounts" element={<ProtectedRoute requireAdmin={true}><Discounts /></ProtectedRoute>} />

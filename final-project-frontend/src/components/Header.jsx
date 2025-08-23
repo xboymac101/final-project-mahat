@@ -81,9 +81,11 @@ function Header({ setIsLoggedIn }) {
             <nav>
               <ul className='menu'>
                 <li><NavLink to='/' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'} end>Home</NavLink></li>
-                <li><NavLink to='/about' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>About</NavLink></li>
+                {!loading && role === 'Regular' && (<li><NavLink to='/about' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>About</NavLink></li>)}
                 <li><NavLink to='/categories' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>Categories</NavLink></li>
                 <li><NavLink to='/rules' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>Rules</NavLink></li>
+
+
 
                 {!loading && role === 'Regular' && (
                   <>

@@ -14,9 +14,9 @@ export default function ProtectedRoute({ children, requireAdmin = false, require
   if (auth === null) return <div>Loading...</div>;
   if (!auth) return <Navigate to="/" replace />;
 
-  if (requireAdmin && auth.role !== 'Admin') return <Navigate to="/not-authorized" replace />;
-  if (requireStaffOrAdmin && !['Admin', 'Staff'].includes(auth.role)) return <Navigate to="/not-authorized" replace />;
-  if (requireRegularOnly && auth.role !== 'Regular') return <Navigate to="/not-authorized" replace />;
+  if (requireAdmin && auth.role !== 'Admin') return <Navigate to="/" replace />;
+  if (requireStaffOrAdmin && !['Admin', 'Staff'].includes(auth.role)) return <Navigate to="/" replace />;
+  if (requireRegularOnly && auth.role !== 'Regular') return <Navigate to="/" replace />;
 
   return children;
 }
