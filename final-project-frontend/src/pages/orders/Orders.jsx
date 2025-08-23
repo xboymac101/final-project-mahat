@@ -11,7 +11,7 @@ export default function Orders() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Pending"); // default UI to Pending
 
   const ordersPerPage = 5;
 
@@ -25,8 +25,9 @@ export default function Orders() {
     axios
       .get(`/api/admin/orders?${params.toString()}`, { withCredentials: true })
       .then((res) => {
-        setOrders(res.data.orders);
+        setOrders(res.data.orders || []);
         setTotalPages(res.data.totalPages || 1);
+        setError("");
       })
       .catch((err) => {
         console.error(err);
@@ -34,10 +35,11 @@ export default function Orders() {
       });
   }
 
+  // Fetch whenever page OR filters change (including initial render)
   useEffect(() => {
-    fetchOrders(currentPage);
-    // eslint-disable-next-line
-  }, [currentPage]);
+    fetchOrders(currentPage, searchTerm, statusFilter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, statusFilter, searchTerm]);
 
   function groupOrdersById(flatOrders) {
     const grouped = {};
@@ -67,13 +69,11 @@ export default function Orders() {
     axios
       .put(
         `/api/admin/orders/${orderId}`,
-        {
-          status: editedStatus,
-          due_date: editedDueDate
-        },
+        { status: editedStatus, due_date: editedDueDate },
         { withCredentials: true }
       )
       .then(() => {
+        // refetch with current filters & page
         fetchOrders(currentPage);
         setEditingOrderId(null);
         setEditedStatus("");
@@ -86,15 +86,15 @@ export default function Orders() {
   }
 
   function handleFilterChange() {
-    setCurrentPage(1);
-    fetchOrders(1);
+    // invoked on Enter in search input
+    setCurrentPage(1); // effect will refetch with updated searchTerm
   }
 
   function resetFilters() {
     setSearchTerm("");
     setStatusFilter("");
     setCurrentPage(1);
-    fetchOrders(1, "", "");
+    // effect will refetch automatically
   }
 
   const groupedOrders = groupOrdersById(orders);
@@ -112,13 +112,12 @@ export default function Orders() {
           onKeyDown={(e) => e.key === "Enter" && handleFilterChange()}
           className={styles.searchInput}
         />
+
         <select
           value={statusFilter}
           onChange={(e) => {
-            const value = e.target.value;
-            setStatusFilter(value);
-            setCurrentPage(1);
-            fetchOrders(1, searchTerm, value);
+            setStatusFilter(e.target.value);
+            setCurrentPage(1); // refetch via effect
           }}
           className={styles.selectInput}
         >
@@ -128,6 +127,7 @@ export default function Orders() {
           <option value="Canceled">Canceled</option>
           <option value="Returned">Returned</option>
         </select>
+
         <button onClick={resetFilters} className={styles.resetButton}>
           Reset Filters
         </button>
@@ -158,10 +158,10 @@ export default function Orders() {
                 <tbody>
                   {order.items.map((item, idx) => (
                     <tr key={idx}>
-                      <td>{item.title}</td>
-                      <td>{item.type}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.due_date?.slice(0, 10) || "-"}</td>
+                      <td>{item.title || "-"}</td>
+                      <td>{item.type || "-"}</td>
+                      <td>{item.quantity ?? "-"}</td>
+                      <td>{item.due_date ? item.due_date.slice(0, 10) : "-"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -218,7 +218,9 @@ export default function Orders() {
                     onClick={() => {
                       setEditingOrderId(order.order_id);
                       setEditedStatus(order.status);
-                      setEditedDueDate(order.items.find(i => i.due_date)?.due_date?.slice(0, 10) || "");
+                      setEditedDueDate(
+                        order.items.find(i => i.due_date)?.due_date?.slice(0, 10) || ""
+                      );
                     }}
                     className={styles.editButton}
                   >
