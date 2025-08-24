@@ -19,6 +19,7 @@ import Discounts from '../pages/discounts/Discounts';
 import StaffEmailReplies from "../pages/staffemailreplies/StaffEmailReplies";
 import SearchPage from '../pages/searchpage/SearchPage'; 
 import Profile from "../pages/profile/Profile";
+import Stock from '../pages/stock/Stock';
 
 function MyRoutes({ isLoggedIn }) {
   return (
@@ -31,7 +32,8 @@ function MyRoutes({ isLoggedIn }) {
         </>
       ) : (
         <>
-          <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+          <Route path="/stock" element={<ProtectedRoute><Stock /></ProtectedRoute>} />
+           <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/books" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
           <Route path="/book/:id" element={<ProtectedRoute><BookDetails /></ProtectedRoute>} />
           <Route path="/edit-book/:id" element={<ProtectedRoute requireStaffOrAdmin={true}><EditBooks /></ProtectedRoute>} />

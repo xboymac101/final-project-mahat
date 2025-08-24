@@ -17,7 +17,7 @@ const categoriesRoutes = require("./routes/categories");
 const staffEmailRoutes = require('./routes/staffemail');
 const factsRoute = require('./routes/facts')
 const profileRoutes = require('./routes/profilestats')
-
+const stockRoutes = require('./routes/stock')
 const email = require('./routes/email');
 
 
@@ -46,6 +46,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/books", stockRoutes);
 app.use("/api/books", booksRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/facts", factsRoute);

@@ -1,0 +1,158 @@
+/* === Page container (wider, centered, readable) === */
+.wrap {
+  width: min(1400px, 94vw);
+  margin: 24px auto;
+  padding: 16px 18px 20px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  backdrop-filter: blur(2px);
+}
+
+/* === Toolbar layout === */
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto; /* input | select | checkbox | (threshold?) | btn */
+  gap: 10px 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+/* Inputs/selects with green focus */
+.input, .select, .inputNum, .qtyInput {
+  padding: 8px;
+  border: 1px solid #cfd8dc;
+  border-radius: 10px;
+  background: #fff;
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+.inputNum { width: 90px; }
+.qtyInput { width: 80px; text-align: center; }
+.input:focus, .select:focus, .inputNum:focus, .qtyInput:focus {
+  outline: none;
+  border-color: #38a169;
+  box-shadow: 0 0 0 3px rgba(56,161,105,.15);
+}
+
+/* Buttons: green palette */
+.btn, .btnPrimary {
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .02s ease;
+}
+/* Outline green (Export CSV, Edit qty, etc.) */
+.btn {
+  color: #2f855a;
+  background: #f3fcf6;
+  border-color: rgba(56,161,105,.35);
+}
+.btn:hover { background: #e8fbf0; border-color: #38a169; }
+.btn:active { transform: translateY(1px); }
+
+/* Solid green (Save) */
+.btnPrimary {
+  color: #fff;
+  background: #38a169;
+  border-color: #2f855a;
+}
+.btnPrimary:hover { background: #2f855a; }
+.btnPrimary:active { transform: translateY(1px); }
+
+/* Disabled */
+.btn:disabled, .btnPrimary:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  background: #f2f2f2;
+  color: #9aa0a6;
+  border-color: #e0e0e0;
+}
+
+/* === Table styling === */
+.tableWrap {
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff; /* solid white inside the card */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #eee;
+  user-select: none;
+}
+
+.table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+tbody tr:hover { background: #f7fff9; }  /* subtle green hover */
+.lowRow { background: #fff6f6; }
+
+.center { text-align: center; }
+.right  { text-align: right; }
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+}
+
+/* === Footer / pagination === */
+.footerRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageInfo { font-size: 14px; }
+
+/* Alerts */
+.error {
+  margin-top: 10px;
+  color: #a40000;
+  background: #ffecec;
+  border: 1px solid #ffcece;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.loading { margin-top: 10px; }
+
+.checkRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* === Responsive tweaks === */
+@media (max-width: 800px) {
+  .toolbar { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .wrap {
+    margin: 12px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+}
