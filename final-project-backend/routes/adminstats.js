@@ -2,63 +2,96 @@ const express = require('express');
 const router = express.Router();
 const db = require('../dbSingleton').getConnection();
 
+function isYmd(s) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(s);
+}
+
+function buildDateFilter(q) {
+  const { fromDate, toDate } = q;
+  const range = parseInt(q.range, 10) || 30;
+
+  if (fromDate && toDate && isYmd(fromDate) && isYmd(toDate)) {
+    // Include whole "to" day: [fromDate, toDate+1)
+    return {
+      whereSql: "o.order_date >= ? AND o.order_date < DATE_ADD(?, INTERVAL 1 DAY)",
+      params: [fromDate, toDate],
+    };
+  }
+
+  return {
+    whereSql: "o.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)",
+    params: [range],
+  };
+}
+
 router.get('/stats', async (req, res) => {
   try {
     const stats = {};
-    const range = parseInt(req.query.range) || 30;
+    const conn = db.promise();
+    const { whereSql, params } = buildDateFilter(req.query);
 
-    // Total Orders (within range)
-    const [totalOrders] = await db.promise().query(`
-      SELECT COUNT(*) AS count FROM \`order\`
-      WHERE order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-    `, [range]);
-    stats.totalOrders = totalOrders[0].count;
+    // Total Orders
+    const [totalOrders] = await conn.query(
+      `SELECT COUNT(*) AS count
+       FROM \`order\` o
+       WHERE ${whereSql}`,
+      params
+    );
+    stats.totalOrders = totalOrders[0]?.count || 0;
 
-    // Completed Orders (within range)
-    const [completedOrders] = await db.promise().query(`
-      SELECT COUNT(*) AS count FROM \`order\`
-      WHERE status = 'Completed' AND order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-    `, [range]);
-    stats.completedOrders = completedOrders[0].count;
+    // Completed Orders
+    const [completedOrders] = await conn.query(
+      `SELECT COUNT(*) AS count
+       FROM \`order\` o
+       WHERE o.status = 'Completed' AND ${whereSql}`,
+      params
+    );
+    stats.completedOrders = completedOrders[0]?.count || 0;
 
-    // Canceled Orders (within range)
-    const [canceledOrders] = await db.promise().query(`
-      SELECT COUNT(*) AS count FROM \`order\`
-      WHERE status = 'Canceled' AND order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-    `, [range]);
-    stats.canceledOrders = canceledOrders[0].count;
+    // Canceled Orders
+    const [canceledOrders] = await conn.query(
+      `SELECT COUNT(*) AS count
+       FROM \`order\` o
+       WHERE o.status = 'Canceled' AND ${whereSql}`,
+      params
+    );
+    stats.canceledOrders = canceledOrders[0]?.count || 0;
 
-    // Total Revenue (within range)
-    const [revenue] = await db.promise().query(`
-      SELECT SUM(price * quantity) AS total FROM order_items oi
-      JOIN \`order\` o ON o.order_id = oi.order_id
-      WHERE o.status = 'Completed' AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-    `, [range]);
-    stats.revenue = revenue[0].total || 0;
+    // Total Revenue (uses oi.price)
+    const [revenue] = await conn.query(
+      `SELECT SUM(oi.price * oi.quantity) AS total
+       FROM order_items oi
+       JOIN \`order\` o ON o.order_id = oi.order_id
+       WHERE o.status = 'Completed' AND ${whereSql}`,
+      params
+    );
+    stats.revenue = Number(revenue[0]?.total) || 0;
 
-    // Top Book (within range)
-    const [topBook] = await db.promise().query(`
-      SELECT b.title, SUM(oi.quantity) AS total_sold
-      FROM order_items oi
-      JOIN book b ON b.book_id = oi.book_id
-      JOIN \`order\` o ON o.order_id = oi.order_id
-      WHERE o.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-      GROUP BY b.book_id
-      ORDER BY total_sold DESC
-      LIMIT 1
-    `, [range]);
+    // Top Book (by quantity in the period)
+    const [topBook] = await conn.query(
+      `SELECT b.title, SUM(oi.quantity) AS total_sold
+       FROM order_items oi
+       JOIN book b ON b.book_id = oi.book_id
+       JOIN \`order\` o ON o.order_id = oi.order_id
+       WHERE ${whereSql}
+       GROUP BY b.book_id, b.title
+       ORDER BY total_sold DESC
+       LIMIT 1`,
+      params
+    );
     stats.topBook = topBook[0] || null;
 
-    // Top Customer (within range)
-    const [topCustomer] = await db.promise().query(`
-      SELECT u.name, COUNT(*) AS total_orders
-      FROM \`order\` o
-      JOIN users u ON o.user_id = u.user_id
-      WHERE o.order_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-      GROUP BY o.user_id
-      ORDER BY total_orders DESC
-      LIMIT 1
-    `, [range]);
+    // Top Customer (by number of orders in the period)
+    const [topCustomer] = await conn.query(
+      `SELECT u.name, COUNT(*) AS total_orders
+       FROM \`order\` o
+       JOIN users u ON o.user_id = u.user_id
+       WHERE ${whereSql}
+       GROUP BY o.user_id, u.name
+       ORDER BY total_orders DESC
+       LIMIT 1`,
+      params
+    );
     stats.topCustomer = topCustomer[0] || null;
 
     res.json(stats);
@@ -68,10 +101,10 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-//For Testing the Dates(7,30,90 days)
+// (Optional) Test helper to randomize dates:
 router.post('/fake-dates', async (req, res) => {
-  const db = require('../dbSingleton').getConnection().promise();
-  await db.query(`
+  const conn = require('../dbSingleton').getConnection().promise();
+  await conn.query(`
     UPDATE \`order\`
     SET order_date = DATE_SUB(CURDATE(), INTERVAL FLOOR(RAND() * 30) DAY)
   `);
