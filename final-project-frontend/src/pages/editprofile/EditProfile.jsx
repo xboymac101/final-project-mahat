@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import classes from "./EditProfile.module.css";
-import { useNavigate } from "react-router-dom";
+
 
 export default function EditProfile() {
   const [user, setUser] = useState({
@@ -11,7 +11,7 @@ export default function EditProfile() {
     address: ""
   });
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     axios.get("/api/auth/info", { withCredentials: true })
@@ -30,11 +30,7 @@ export default function EditProfile() {
       .catch(err => alert("Update failed."));
   }
 
-  function handleLogout() {
-    axios.post("/api/auth/logout", {}, { withCredentials: true })
-      .then(() => navigate("/"))
-      .catch(() => alert("Logout failed"));
-  }
+
 
   return (
     <div className={classes.editProfileContainer}>

@@ -1,43 +1,52 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import classes from "./Profile.module.css";
-import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const [user, setUser] = useState({
     name: "",
     email: "",
     phone_number: "",
-    address: ""
+    address: "",
+    role: "" // important for deciding what to render
   });
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
 
-  // NEW: insights (auto favorites) + fallback popular
   const [insights, setInsights] = useState({
-    favoriteBook: null,
-    favoriteCategory: null,
-    popularBooks: [],
-    popularCategories: []
+    favoriteBook: null,         // { book_id, title, author, image_url, total_orders }
+    favoriteCategory: null,     // { name, total_bought }
+    popularBooks: [],           // [{ book_id, title, author, total_orders }]
+    popularCategories: []       // [{ name, total_bought }]
   });
   const [loadingInsights, setLoadingInsights] = useState(true);
-
 
   useEffect(() => {
     setLoading(true);
     axios
       .get("/api/auth/info", { withCredentials: true })
-      .then((res) => {
-        setUser(res.data || {});
-        setLoading(false);
+      .then(async (res) => {
+        const info = res.data || {};
+        setUser((prev) => ({ ...prev, ...info }));
+        // If /api/auth/info doesn't include role, fetch it from /api/auth/me
+        if (!info.role) {
+          try {
+            const r2 = await axios.get("/api/auth/me", { withCredentials: true });
+            if (r2?.data?.role) {
+              setUser((prev) => ({ ...prev, role: r2.data.role }));
+            }
+          } catch {
+            /* ignore */
+          }
+        }
       })
       .catch(() => {
-        setLoading(false);
         alert("Failed to load profile.");
-      });
+      })
+      .finally(() => setLoading(false));
 
-    // Load auto-derived favorites (and optional popular fallback)
+    // Load stats (backend returns favorites for Regular, popular for everyone)
     setLoadingInsights(true);
     axios
       .get("/api/profile/stats", { withCredentials: true })
@@ -46,7 +55,6 @@ export default function Profile() {
         setInsights({
           favoriteBook: data.favoriteBook ?? null,
           favoriteCategory: data.favoriteCategory ?? null,
-          // these arrays are optional; if backend doesn't send them, keep empty
           popularBooks: Array.isArray(data.popularBooks) ? data.popularBooks : [],
           popularCategories: Array.isArray(data.popularCategories) ? data.popularCategories : []
         });
@@ -83,19 +91,15 @@ export default function Profile() {
     axios
       .get("/api/auth/info", { withCredentials: true })
       .then((res) => {
-        setUser(res.data || {});
+        setUser((prev) => ({ ...prev, ...(res.data || {}) }));
         setEditing(false);
-        setLoading(false);
       })
-      .catch(() => {
-        setLoading(false);
-        setEditing(false);
-      });
+      .finally(() => setLoading(false));
   }
 
-
-
   if (loading) return <div className={classes.loader}>Loading…</div>;
+
+  const isRegular = user.role === "Regular";
 
   return (
     <div className={classes.page}>
@@ -120,7 +124,6 @@ export default function Profile() {
                 <button className={classes.ghostBtn} onClick={onCancel}>Cancel</button>
               </>
             )}
-            
           </div>
         </div>
 
@@ -183,92 +186,104 @@ export default function Profile() {
         </form>
       </div>
 
-      {/* Auto-derived Favorites + Fallback */}
-      <div className={classes.card}>
-        <div className={classes.headerRow}>
-          <h3 className={classes.title} style={{ margin: 0 }}>Your Favorites (auto)</h3>
-        </div>
+      {/* CUSTOMER (Regular): ONLY Favorites (no popular at all) */}
+      {isRegular && (
+        <div className={classes.card}>
+          <div className={classes.headerRow}>
+            <h3 className={classes.title} style={{ margin: 0 }}>Your Favorites</h3>
+          </div>
 
-        {loadingInsights ? (
-          <div className={classes.loader}>Calculating…</div>
-        ) : (
-          <>
-            {/* Favorite Book */}
-            <h4 className={classes.subsection}>Favorite Book</h4>
-            {insights.favoriteBook ? (
-              <div className={classes.bookCard}>
-                <div className={classes.bookThumb}>
-                  {insights.favoriteBook.image_url ? (
-                    <img src={insights.favoriteBook.image_url} alt={insights.favoriteBook.title} />
-                  ) : (
-                    <div className={classes.bookPlaceholder}>📚</div>
-                  )}
-                </div>
-                <div className={classes.bookMeta}>
-                  <div className={classes.bookTitle}>{insights.favoriteBook.title}</div>
-                  <div className={classes.bookAuthor}>{insights.favoriteBook.author}</div>
-                  <div className={classes.muted}>
-                    Total orders: {insights.favoriteBook.total_orders}
+          {loadingInsights ? (
+            <div className={classes.loader}>Loading…</div>
+          ) : (
+            <>
+              {/* Favorite Book (with image) */}
+              <h4 className={classes.subsection}>Favorite Book</h4>
+              {insights.favoriteBook ? (
+                <div className={classes.bookCard}>
+                  <div className={classes.bookThumb}>
+                    {insights.favoriteBook.image_url ? (
+                      <img src={insights.favoriteBook.image_url} alt={insights.favoriteBook.title} />
+                    ) : (
+                      <div className={classes.bookPlaceholder}>📚</div>
+                    )}
+                  </div>
+                  <div className={classes.bookMeta}>
+                    <div className={classes.bookTitle}>{insights.favoriteBook.title}</div>
+                    <div className={classes.bookAuthor}>{insights.favoriteBook.author}</div>
+                    <div className={classes.muted}>
+                      Total orders: {insights.favoriteBook.total_orders}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <>
+              ) : (
                 <p className={classes.muted}>No purchases or rentals yet.</p>
-                {insights.popularBooks?.length > 0 && (
-                  <>
-                    <h5 className={classes.subsection} style={{ marginTop: 8 }}>Popular right now</h5>
-                    <div className={classes.bookGrid}>
-                      {insights.popularBooks.map((b) => (
-                        <div key={b.book_id} className={classes.bookCard}>
-                          <div className={classes.bookThumb}>
-                            {b.image_url ? (
-                              <img src={b.image_url} alt={b.title} />
-                            ) : (
-                              <div className={classes.bookPlaceholder}>📚</div>
-                            )}
-                          </div>
-                          <div className={classes.bookMeta}>
-                            <div className={classes.bookTitle}>{b.title}</div>
-                            <div className={classes.bookAuthor}>{b.author}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </>
-            )}
+              )}
 
-            {/* Favorite Category */}
-            <h4 className={classes.subsection}>Favorite Category</h4>
-            {insights.favoriteCategory ? (
-              <span className={classes.chip}>
-                {insights.favoriteCategory.name}
-                <span style={{ marginLeft: 8, fontWeight: 400 }} className={classes.muted}>
-                  ({insights.favoriteCategory.total_bought} bought)
+              {/* Favorite Category */}
+              <h4 className={classes.subsection}>Favorite Category</h4>
+              {insights.favoriteCategory ? (
+                <span className={classes.chip}>
+                  {insights.favoriteCategory.name}
+                  <span style={{ marginLeft: 8, fontWeight: 400 }} className={classes.muted}>
+                    ({insights.favoriteCategory.total_bought} bought)
+                  </span>
                 </span>
-              </span>
-            ) : (
-              <>
+              ) : (
                 <p className={classes.muted}>No purchases yet.</p>
-                {insights.popularCategories?.length > 0 && (
-                  <>
-                    <h5 className={classes.subsection} style={{ marginTop: 8 }}>Popular categories</h5>
-                    <div className={classes.chips}>
-                      {insights.popularCategories.map((name) => (
-                        <span key={name} className={classes.chip}>{name}</span>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
-     
+      {/* ADMIN/STAFF: ONLY Popular (no images) */}
+      {!isRegular && (
+        <div className={classes.card}>
+          <div className={classes.headerRow}>
+            <h3 className={classes.title} style={{ margin: 0 }}>Popular right now</h3>
+          </div>
+
+          {loadingInsights ? (
+            <div className={classes.loader}>Loading…</div>
+          ) : (
+            <>
+              {Array.isArray(insights.popularBooks) && insights.popularBooks.length > 0 && (
+                <>
+                  <h4 className={classes.subsection}>Books</h4>
+                  <div className={classes.bookGrid}>
+                    {insights.popularBooks.map((b) => (
+                      <div key={b.book_id} className={classes.bookCard}>
+                        <div className={classes.bookMeta}>
+                          <div className={classes.bookTitle}>{b.title}</div>
+                          <div className={classes.bookAuthor}>{b.author}</div>
+                          <div className={classes.muted}>Total orders: {b.total_orders ?? 0}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {Array.isArray(insights.popularCategories) && insights.popularCategories.length > 0 && (
+                <>
+                  <h4 className={classes.subsection} style={{ marginTop: 8 }}>Categories</h4>
+                  <div className={classes.chips}>
+                    {insights.popularCategories.map((c) => (
+                      <span key={c.name} className={classes.chip}>
+                        {c.name}
+                        <span className={classes.muted} style={{ marginLeft: 6 }}>
+                          ({c.total_bought})
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

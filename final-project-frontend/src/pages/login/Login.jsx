@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import logo from '../../assets/img/logo.png';
 import axios from "axios";
 import classes from "./login.module.css";
