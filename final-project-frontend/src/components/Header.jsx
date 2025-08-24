@@ -14,6 +14,8 @@ function Header({ setIsLoggedIn }) {
   const [searchTerm, setSearchTerm] = useState('');
   const { cartCount } = useCart();
   const navigate = useNavigate();
+const isAdminOrStaff = role === 'Admin' || role === 'Staff';
+const homePath = isAdminOrStaff ? '/stock' : '/';
 
   useEffect(() => {
     const fetchUser = () => {
@@ -61,7 +63,7 @@ function Header({ setIsLoggedIn }) {
       <div className='container'>
         <div className='header__wrap'>
         <div className='logo'>
-        <NavLink to='/' className='menu-item'>
+        <NavLink to={homePath} className='menu-item'>
           <img src={logo} alt='logo' />
           <span className='slogan'>BookHaven</span>
         </NavLink>
@@ -80,7 +82,15 @@ function Header({ setIsLoggedIn }) {
         </form>
             <nav>
               <ul className='menu'>
-                <li><NavLink to='/' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'} end>Home</NavLink></li>
+               <li>
+                  <NavLink
+                    to={homePath}
+                    className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}
+                    end={homePath === '/'}  // exact-match only for '/'
+                  >
+                    {isAdminOrStaff ? 'Stock' : 'Home'}
+                  </NavLink>
+                </li>
                 {!loading && role === 'Regular' && (<li><NavLink to='/about' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>About</NavLink></li>)}
                 <li><NavLink to='/categories' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>Categories</NavLink></li>
                 <li><NavLink to='/rules' className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>Rules</NavLink></li>
