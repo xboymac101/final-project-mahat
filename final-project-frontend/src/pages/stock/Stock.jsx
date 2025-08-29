@@ -18,7 +18,7 @@ export default function Stock() {
   const [lowOnly, setLowOnly] = useState(false);
   const [lowThreshold, setLowThreshold] = useState(5);
 
-  const [sortBy, setSortBy] = useState("title");
+  const [sortBy, setSortBy] = useState("quantity_in_stock");
   const [sortDir, setSortDir] = useState("asc");
 
   const [error, setError] = useState("");

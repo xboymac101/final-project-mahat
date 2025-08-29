@@ -1,135 +1,28 @@
+/* ===== Simple Row (always visible) ===== */
+/* Make sure the container has your original look AND prevents margin bleed */
 .container {
   max-width: 1100px;
   width: 100%;
   margin: 40px auto;
-  padding: 20px;
   background-color: #f7f7fa;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0,0,0,.1);
+
+  display: flow-root;         /* keep children’s margins inside */
+  padding: 24px 24px 28px;    /* extra bottom padding for pager */
+  box-sizing: border-box;
 }
 
-.title {
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.error {
-  color: red;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.empty {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #777;
-  margin-bottom: 20px;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 25px;
-}
-
-.searchInput,
-.selectInput {
-  padding: 10px 15px;
-  font-size: 1.2rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  min-width: 220px;
-}
-
-.resetButton {
-  padding: 8px 14px;
-  font-size: 1.5rem;
-  border: none;
-  border-radius: 6px;
-  background-color: #999;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.resetButton:hover {
-  background-color: #777;
-}
-
-.list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.orderItem {
-  background-color: #fff;
-  padding: 20px;
+/* Scope the bars so they’re styled as cards inside the container */
+.container .filters,
+.container .pagination {
+  background: #fff;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 12px 14px;
 }
 
-.orderItem > div {
-  margin-bottom: 8px;
-}
-
-.inlineFields {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.inlineFields select,
-.inlineFields input[type="date"] {
-  padding: 5px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #fff;
-}
-
-.buttonGroup {
-  margin-top: 12px;
-}
-
-.editButton,
-.saveButton {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 2rem;
-  font-weight: bold;
-  margin-top: 8px;
-  transition: background-color 0.2s ease;
-}
-
-.editButton {
-  background-color: #4f86f7;
-  color: white;
-}
-
-.editButton:hover {
-  background-color: #336ee1;
-}
-
-.saveButton {
-  background-color: #28a745;
-  color: white;
-}
-
-.saveButton:hover {
-  background-color: #1e9239;
-}
-
+/* Your pagination layout (kept) */
 .pagination {
   display: flex;
   justify-content: center;
@@ -137,22 +30,169 @@
   gap: 14px;
   margin-top: 30px;
 }
+.simpleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1.7rem; /* bigger text inside orders */
 
-.pagination button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  background-color: green;
-  cursor: pointer;
+}
+.orderItem {
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 10px;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 1.1rem; /* bigger text inside orders */
+}
+.simpleLeft {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.orderId {
+  font-weight: 700;
+  color: #333;
+}
+
+.customer {
+  font-weight: 600;
+  color: #222;
+}
+
+.simpleMid {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
   font-weight: bold;
+  text-transform: capitalize;
+}
+
+.status.pending {
+  background: #ffe08a;
+  color: #664d00;
+}
+.status.completed {
+  background: #c9f7ca;
+  color: #1e4620;
+}
+.status.canceled {
+  background: #f7c9c9;
+  color: #5a1d1d;
+}
+.status.returned {
+  background: #c9d8f7;
+  color: #1d2a5a;
+}
+
+.meta {
+  font-size: 1.3rem;
+  color: #666;
+}
+
+.simpleRight {
+  display: flex;
+  align-items: center;
+}
+
+/* ===== More/Less Button ===== */
+.moreBtn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: #4f86f7; /* <-- change to green */
+  background-color: #66bb6a;
+  color: white;
   transition: background-color 0.2s ease;
 }
-
-.pagination button:hover:not(:disabled) {
-  background-color: #ccc;
+.moreBtn:hover {
+  background: #ddd;
+  border-color: #999;
 }
 
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* ===== Details (collapsible) ===== */
+.details {
+  margin-top: 12px;
+  margin-bottom: 5px;
+  padding: 14px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 10px;
+  font-size: 1.7rem;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.itemsHeader {
+  margin: 12px 0 6px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* ===== Items Table ===== */
+.itemTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.5rem;
+}
+
+.itemTable th,
+.itemTable td {
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.itemTable th {
+  background: #f1f1f1;
+  font-weight: bold;
+  color: #444;
+  font-size: large;
+}
+
+.itemTable td {
+  color: #333;
+}
+
+/* ===== Extension warning ===== */
+.extensionWarning {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #d48806;
+}
+
+/* ===== Small animation for opening details ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

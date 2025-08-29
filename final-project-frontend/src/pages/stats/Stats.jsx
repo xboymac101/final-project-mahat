@@ -78,7 +78,7 @@ export default function Stats() {
   return (
     <div className={styles.statsPage}>
       <div className={styles.statsWrapper}>
-        <h1>📊 Admin Statistics</h1>
+        <h1>📊 Website Statistics</h1>
 
         {/* Quick ranges */}
         <div className={styles.rangeSelector}>
@@ -128,6 +128,11 @@ export default function Stats() {
           <div className={styles.card}><h3>Top Book Ordered</h3><p>{stats.topBook?.title || 'N/A'}</p></div>
           <div className={styles.card}><h3>Top Customer With Most Orders</h3><p>{stats.topCustomer?.name || 'N/A'}</p></div>
         </div>
+
+        <br>
+        </br>
+        <br>
+        </br>
 
         <div className={styles.chartContainer}>
           <ResponsiveContainer width="100%" height={300}>

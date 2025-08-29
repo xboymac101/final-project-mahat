@@ -20,9 +20,12 @@ export default function Login() {
       .then((res) => {
         setTimeout(() => {
           const role = res.data.user?.role;
-          if (role === "Admin" || role === "Staff") {
+          if (role === "Staff") {
             window.location.href = "/admin/orders";
-          } else {
+          } else if(role === "Admin" ) {
+            window.location.href = "/admin/stats";
+          }
+          else{
             window.location.href = "/";
           }
         });

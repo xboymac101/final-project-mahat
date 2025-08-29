@@ -11,7 +11,8 @@ export default function Orders() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("Pending"); // default UI to Pending
+  const [statusFilter, setStatusFilter] = useState("Pending");
+  const [expanded, setExpanded] = useState({}); // { [order_id]: boolean }
 
   const ordersPerPage = 5;
 
@@ -35,7 +36,6 @@ export default function Orders() {
       });
   }
 
-  // Fetch whenever page OR filters change (including initial render)
   useEffect(() => {
     fetchOrders(currentPage, searchTerm, statusFilter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,23 +57,32 @@ export default function Orders() {
       }
       grouped[item.order_id].items.push({
         title: item.book_title,
-        type: item.type,
+        type: item.type,            // "rent" | "buy"
         quantity: item.quantity,
-        due_date: item.due_date
+        due_date: item.due_date     // null for buys
       });
     }
     return Object.values(grouped);
   }
 
-  function handleSave(orderId) {
+  // Helpers
+  function hasRent(order) {
+    return order.items?.some((i) => i.type === "rent");
+  }
+  function firstDueDate(order) {
+    const d = order.items.find((i) => i.type === "rent" && i.due_date)?.due_date;
+    return d ? d.slice(0, 10) : "-";
+  }
+  function itemsCount(order) {
+    return order.items?.reduce((sum, i) => sum + (Number(i.quantity) || 0), 0) || 0;
+  }
+
+  function handleSave(order) {
+    const payload = { status: editedStatus };
+    if (hasRent(order)) payload.due_date = editedDueDate; // only send for rent
     axios
-      .put(
-        `/api/admin/orders/${orderId}`,
-        { status: editedStatus, due_date: editedDueDate },
-        { withCredentials: true }
-      )
+      .put(`/api/admin/orders/${order.order_id}`, payload, { withCredentials: true })
       .then(() => {
-        // refetch with current filters & page
         fetchOrders(currentPage);
         setEditingOrderId(null);
         setEditedStatus("");
@@ -86,15 +95,17 @@ export default function Orders() {
   }
 
   function handleFilterChange() {
-    // invoked on Enter in search input
-    setCurrentPage(1); // effect will refetch with updated searchTerm
+    setCurrentPage(1);
   }
 
   function resetFilters() {
     setSearchTerm("");
     setStatusFilter("");
     setCurrentPage(1);
-    // effect will refetch automatically
+  }
+
+  function toggle(orderId) {
+    setExpanded((prev) => ({ ...prev, [orderId]: !prev[orderId] }));
   }
 
   const groupedOrders = groupOrdersById(orders);
@@ -117,7 +128,7 @@ export default function Orders() {
           value={statusFilter}
           onChange={(e) => {
             setStatusFilter(e.target.value);
-            setCurrentPage(1); // refetch via effect
+            setCurrentPage(1);
           }}
           className={styles.selectInput}
         >
@@ -139,97 +150,160 @@ export default function Orders() {
         <p className={styles.empty}>No orders found.</p>
       ) : (
         <ul className={styles.list}>
-          {groupedOrders.map((order) => (
-            <li key={order.order_id} className={styles.orderItem}>
-              <div><strong>Order ID:</strong> {order.order_id}</div>
-              <div><strong>Customer:</strong> {order.customer_name}</div>
-              <div><strong>Email:</strong> {order.email}</div>
-              <div><strong>Phone:</strong> {order.phone_number}</div>
+          {groupedOrders.map((order) => {
+            const isOpen = !!expanded[order.order_id];
+            const rentExists = hasRent(order);
 
-              <table className={styles.itemTable}>
-                <thead>
-                  <tr>
-                    <th>Book</th>
-                    <th>Type</th>
-                    <th>Quantity</th>
-                    <th>Due Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.items.map((item, idx) => (
-                    <tr key={idx}>
-                      <td>{item.title || "-"}</td>
-                      <td>{item.type || "-"}</td>
-                      <td>{item.quantity ?? "-"}</td>
-                      <td>{item.due_date ? item.due_date.slice(0, 10) : "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              <div className={styles.inlineFields}>
-                <div>
-                  <strong>Status:</strong>{" "}
-                  {editingOrderId === order.order_id ? (
-                    <select
-                      value={editedStatus}
-                      onChange={(e) => setEditedStatus(e.target.value)}
+            return (
+              <li key={order.order_id} className={styles.orderItem}>
+                {/* SIMPLE ROW */}
+                <div className={styles.simpleRow}>
+                  <div className={styles.simpleLeft}>
+                    <span className={styles.orderId}>#{order.order_id}</span>
+                    <span className={styles.customer}>{order.customer_name}</span>
+                  </div>
+                  <div className={styles.simpleMid}>
+                    <span
+                      className={`${styles.status} ${
+                        styles[order.status?.toLowerCase?.() || ""]
+                      }`}
                     >
-                      <option>Pending</option>
-                      <option>Completed</option>
-                      <option>Canceled</option>
-                      <option>Returned</option>
-                    </select>
-                  ) : (
-                    order.status
-                  )}
+                      {order.status}
+                    </span>
+                    <span className={styles.meta}>
+                      {itemsCount(order)} items
+                      {rentExists ? ` • Due: ${firstDueDate(order)}` : ""}
+                    </span>
+                  </div>
+                  <div className={styles.simpleRight}>
+                    <button
+                      className={styles.moreBtn}
+                      onClick={() => toggle(order.order_id)}
+                      aria-expanded={isOpen}
+                      aria-controls={`order-details-${order.order_id}`}
+                    >
+                      {isOpen ? "Less" : "More"}
+                    </button>
+                  </div>
                 </div>
 
-                <div>
-                  <strong>Due Date:</strong>{" "}
-                  {editingOrderId === order.order_id ? (
-                    <input
-                      type="date"
-                      value={editedDueDate}
-                      onChange={(e) => setEditedDueDate(e.target.value)}
-                    />
-                  ) : (
-                    order.items.find(i => i.due_date)?.due_date?.slice(0, 10) || "-"
-                  )}
-                </div>
-              </div>
-
-              {order.extensions_used >= 2 && (
-                <div className={styles.extensionWarning}>
-                  <em>⚠️ This rental has reached the maximum of 2 extensions.</em>
-                </div>
-              )}
-
-              <div className={styles.buttonGroup}>
-                {editingOrderId === order.order_id ? (
-                  <button
-                    onClick={() => handleSave(order.order_id)}
-                    className={styles.saveButton}
+                {/* DETAILS */}
+                {isOpen && (
+                  <div
+                    id={`order-details-${order.order_id}`}
+                    className={styles.details}
                   >
-                    Save
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setEditingOrderId(order.order_id);
-                      setEditedStatus(order.status);
-                      setEditedDueDate(
-                        order.items.find(i => i.due_date)?.due_date?.slice(0, 10) || ""
-                      );
-                    }}
-                    className={styles.editButton}
-                  >
-                    Edit
-                  </button>
+                    <div className={styles.detailsGrid}>
+                      <div>
+                        <h4>Customer</h4>
+                        <div>
+                          <strong>Email:</strong> {order.email}
+                        </div>
+                        <div>
+                          <strong>Phone:</strong> {order.phone_number}
+                        </div>
+                        {order.extensions_used >= 2 && (
+                          <div className={styles.extensionWarning}>
+                            <em>⚠️ This rental has reached the maximum of 2 extensions.</em>
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <h4>Edit</h4>
+                        <div className={styles.inlineFields}>
+                          <div>
+                            <strong>Status:</strong>{" "}
+                            {editingOrderId === order.order_id ? (
+                              <select
+                                value={editedStatus}
+                                onChange={(e) => setEditedStatus(e.target.value)}
+                              >
+                                <option>Pending</option>
+                                <option>Completed</option>
+                                <option>Canceled</option>
+                                <option>Returned</option>
+                              </select>
+                            ) : (
+                              order.status
+                            )}
+                          </div>
+
+                          {/* Only show Due Date controls if there is a rent item */}
+                          {rentExists && (
+                            <div>
+                              <strong>Due Date:</strong>{" "}
+                              {editingOrderId === order.order_id ? (
+                                <input
+                                  type="date"
+                                  value={editedDueDate}
+                                  onChange={(e) => setEditedDueDate(e.target.value)}
+                                />
+                              ) : (
+                                firstDueDate(order)
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className={styles.buttonGroup}>
+                          {editingOrderId === order.order_id ? (
+                            <button
+                              onClick={() => handleSave(order)}
+                              className={styles.saveButton}
+                            >
+                              Save
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setEditingOrderId(order.order_id);
+                                setEditedStatus(order.status);
+                                const rentDue =
+                                  order.items.find(
+                                    (i) => i.type === "rent" && i.due_date
+                                  )?.due_date?.slice(0, 10) || "";
+                                setEditedDueDate(rentDue);
+                              }}
+                              className={styles.editButton}
+                            >
+                              Edit
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <h4 className={styles.itemsHeader}>Items</h4>
+                    <table className={styles.itemTable}>
+                      <thead>
+                        <tr>
+                          <th>Book</th>
+                          <th>Type</th>
+                          <th>Quantity</th>
+                          <th>Due Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {order.items.map((item, idx) => (
+                          <tr key={idx}>
+                            <td>{item.title || "-"}</td>
+                            <td>{item.type || "-"}</td>
+                            <td>{item.quantity ?? "-"}</td>
+                            <td>
+                              {item.type === "rent" && item.due_date
+                                ? item.due_date.slice(0, 10)
+                                : "-"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
 
@@ -240,7 +314,9 @@ export default function Orders() {
         >
           Previous
         </button>
-        <span>Page {currentPage} of {totalPages}</span>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
         <button
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={currentPage >= totalPages}
