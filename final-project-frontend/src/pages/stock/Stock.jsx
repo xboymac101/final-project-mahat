@@ -236,28 +236,7 @@ axios
           ))}
         </select>
 
-        <label className={styles.checkRow}>
-          <input
-            type="checkbox"
-            checked={lowOnly}
-            onChange={(e) => {
-              setPage(1);
-              setLowOnly(e.target.checked);
-            }}
-          />
-          Low stock only
-        </label>
-
-        {lowOnly && (
-          <input
-            className={styles.inputNum}
-            type="number"
-            min={0}
-            value={lowThreshold}
-            onChange={(e) => setLowThreshold(parseInt(e.target.value || "0", 10))}
-            title="Low stock threshold"
-          />
-        )}
+        
 
         <button className={styles.btn} onClick={ExportCSV}>
           Export CSV

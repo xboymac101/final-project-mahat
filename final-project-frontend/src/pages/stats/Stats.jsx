@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./stats.module.css";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer,
 } from "recharts";
 
 export default function Stats() {
@@ -12,38 +19,58 @@ export default function Stats() {
   // Quick range state
   const [range, setRange] = useState(30);
 
-  // Live inputs (not applied yet)
+  // Live inputs (not yet applied)
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  // The dates that were actually applied (control fetching)
-  const [appliedDates, setAppliedDates] = useState(null); // { from: "YYYY-MM-DD", to: "YYYY-MM-DD" } | null
+  // The dates that were actually applied (drive fetching)
+  const [appliedDates, setAppliedDates] = useState(null); // { from, to } | null
 
-  // Build the URL only from applied state (or range)
-  const buildUrl = () => {
+  const navigate = useNavigate();
+
+  // Adjust these if your routes differ
+  const ORDERS_PATH = "/admin/orders";
+  const STOCK_PATH = "/stock";
+
+  // Build a query string that preserves the current date filter
+  const buildQS = (extra = {}) => {
+    const qs = new URLSearchParams();
     if (appliedDates?.from && appliedDates?.to) {
-      return `/api/admin/stats?fromDate=${appliedDates.from}&toDate=${appliedDates.to}`;
+      qs.set("fromDate", appliedDates.from);
+      qs.set("toDate", appliedDates.to);
+    } else {
+      qs.set("range", String(range));
     }
-    return `/api/admin/stats?range=${range}`;
-    // Note: fromDate/toDate are NOT used here, only appliedDates
+    Object.entries(extra).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") qs.set(k, v);
+    });
+    return `?${qs.toString()}`;
   };
 
-  // Fetch whenever quick range changes OR applied dates change
- useEffect(() => {
-  const url = appliedDates?.from && appliedDates?.to
-    ? `/api/admin/stats?fromDate=${appliedDates.from}&toDate=${appliedDates.to}`
-    : `/api/admin/stats?range=${range}`;
-  
-  setError("");
-  setStats(null);
+  // Navigate helpers
+  const goToOrders = (status) =>
+    navigate(`${ORDERS_PATH}${buildQS(status ? { status } : {})}`);
+  const goToOutOfStock = () =>
+    navigate(`${STOCK_PATH}${buildQS({ filter: "out-of-stock" })}`);
 
-  axios.get(url)
-    .then((res) => setStats(res.data))
-    .catch((err) => {
-      console.error(err);
-      setError("Failed to load statistics.");
-    });
-}, [range, appliedDates]);
+  // Fetch whenever quick range changes OR applied dates change
+  useEffect(() => {
+    const url =
+      appliedDates?.from && appliedDates?.to
+        ? `/api/admin/stats?fromDate=${appliedDates.from}&toDate=${appliedDates.to}`
+        : `/api/admin/stats?range=${range}`;
+
+    setError("");
+    setStats(null);
+
+    axios
+      .get(url)
+      .then((res) => setStats(res.data))
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load statistics.");
+      });
+  }, [range, appliedDates]);
 
   const onApply = () => {
     if (!fromDate || !toDate) {
@@ -55,14 +82,13 @@ export default function Stats() {
       return;
     }
     setError("");
-    // Commit the dates that will drive fetching
     setAppliedDates({ from: fromDate, to: toDate });
   };
 
   const onClear = () => {
     setFromDate("");
     setToDate("");
-    setAppliedDates(null); // go back to range mode
+    setAppliedDates(null); // back to range mode
     setError("");
   };
 
@@ -72,13 +98,14 @@ export default function Stats() {
   const chartData = [
     { name: "Total Orders", value: stats.totalOrders },
     { name: "Completed", value: stats.completedOrders },
+    { name: "Pending", value: stats.pendingOrders || 0 },
     { name: "Canceled", value: stats.canceledOrders },
   ];
 
   return (
     <div className={styles.statsPage}>
       <div className={styles.statsWrapper}>
-        <h1>📊 Website Statistics</h1>
+        <h1>📊 Analytics</h1>
 
         {/* Quick ranges */}
         <div className={styles.rangeSelector}>
@@ -87,7 +114,7 @@ export default function Stats() {
             value={range}
             onChange={(e) => {
               setRange(Number(e.target.value));
-              // moving to quick range mode -> forget any applied custom dates
+              // switching to quick range clears any applied custom dates
               setAppliedDates(null);
             }}
           >
@@ -98,7 +125,7 @@ export default function Stats() {
           </select>
         </div>
 
-        {/* Custom date filter (not in a <form>) */}
+        {/* Custom date filter */}
         <div className={styles.dateRange}>
           <label>From:</label>
           <input
@@ -121,18 +148,68 @@ export default function Stats() {
         </div>
 
         <div className={styles.statsGrid}>
-          <div className={styles.card}><h3>Total Orders</h3><p>{stats.totalOrders}</p></div>
-          <div className={styles.card}><h3>Completed Orders</h3><p>{stats.completedOrders}</p></div>
-          <div className={styles.card}><h3>Canceled Orders</h3><p>{stats.canceledOrders}</p></div>
-          <div className={styles.card}><h3>Total Revenue</h3><p>${Number(stats.revenue || 0).toFixed(2)}</p></div>
-          <div className={styles.card}><h3>Top Book Ordered</h3><p>{stats.topBook?.title || 'N/A'}</p></div>
-          <div className={styles.card}><h3>Top Customer With Most Orders</h3><p>{stats.topCustomer?.name || 'N/A'}</p></div>
+          <div className={styles.card}>
+            <h3>Total Orders</h3>
+            <button className={styles.numLink} onClick={() => goToOrders()}>
+              {stats.totalOrders}
+            </button>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Completed Orders</h3>
+            <button
+              className={styles.numLink}
+              onClick={() => goToOrders("Completed")}
+            >
+              {stats.completedOrders}
+            </button>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Pending Orders</h3>
+            <button
+              className={styles.numLink}
+              onClick={() => goToOrders("Pending")}
+            >
+              {stats.pendingOrders || 0}
+            </button>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Canceled Orders</h3>
+            <button
+              className={styles.numLink}
+              onClick={() => goToOrders("Canceled")}
+            >
+              {stats.canceledOrders}
+            </button>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Total Revenue</h3>
+            <p>${Number(stats.revenue || 0).toFixed(2)}</p>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Books Out of Stock</h3>
+            <button className={styles.numLink} onClick={goToOutOfStock}>
+              {stats.outOfStockBooks || 0}
+            </button>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Top Book Ordered</h3>
+            <p>{stats.topBook?.title || "N/A"}</p>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Top Customer With Most Orders</h3>
+            <p>{stats.topCustomer?.name || "N/A"}</p>
+          </div>
         </div>
 
-        <br>
-        </br>
-        <br>
-        </br>
+        <br />
+        <br />
 
         <div className={styles.chartContainer}>
           <ResponsiveContainer width="100%" height={300}>
