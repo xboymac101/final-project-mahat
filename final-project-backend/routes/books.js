@@ -4,7 +4,7 @@ const dbSingleton = require('../dbSingleton');
 const db = dbSingleton.getConnection();
 const { isAdminOrStaff } = require('./auth');
 
-// ✅ GET all books with discount-aware pricing
+//  GET all books with discount-aware pricing
 router.get('/', (req, res) => {
   const search = req.query.search;
   const isDiscounted = req.query.discounted === 'true';
