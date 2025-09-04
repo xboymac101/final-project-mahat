@@ -40,3 +40,16 @@
   margin-top: 2.5rem;
   
 }
+
+/* clickable number look */
+.numLink {
+  all: unset;
+  cursor: pointer;
+  color: #1976d2;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.numLink:focus-visible {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}

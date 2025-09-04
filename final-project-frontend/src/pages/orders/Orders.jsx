@@ -52,14 +52,14 @@ export default function Orders() {
           email: item.email,
           phone_number: item.phone_number,
           extensions_used: item.extensions_used || 0,
-          items: []
+          items: [],
         };
       }
       grouped[item.order_id].items.push({
         title: item.book_title,
-        type: item.type,            // "rent" | "buy"
+        type: item.type, // "rent" | "buy"
         quantity: item.quantity,
-        due_date: item.due_date     // null for buys
+        due_date: item.due_date, // null for buys
       });
     }
     return Object.values(grouped);
@@ -69,19 +69,36 @@ export default function Orders() {
   function hasRent(order) {
     return order.items?.some((i) => i.type === "rent");
   }
+  function hasBuy(order) {
+    return order.items?.some((i) => i.type === "buy");
+  }
+  function orderType(order) {
+    const r = hasRent(order);
+    const b = hasBuy(order);
+    if (r && b) return "Mixed";
+    return r ? "Rent" : "Buy";
+  }
+  function typeClass(order) {
+    const t = orderType(order).toLowerCase(); // 'rent' | 'buy' | 'mixed'
+    return styles[t] || "";
+  }
   function firstDueDate(order) {
     const d = order.items.find((i) => i.type === "rent" && i.due_date)?.due_date;
     return d ? d.slice(0, 10) : "-";
   }
   function itemsCount(order) {
-    return order.items?.reduce((sum, i) => sum + (Number(i.quantity) || 0), 0) || 0;
+    return (
+      order.items?.reduce((sum, i) => sum + (Number(i.quantity) || 0), 0) || 0
+    );
   }
 
   function handleSave(order) {
     const payload = { status: editedStatus };
     if (hasRent(order)) payload.due_date = editedDueDate; // only send for rent
     axios
-      .put(`/api/admin/orders/${order.order_id}`, payload, { withCredentials: true })
+      .put(`/api/admin/orders/${order.order_id}`, payload, {
+        withCredentials: true,
+      })
       .then(() => {
         fetchOrders(currentPage);
         setEditingOrderId(null);
@@ -160,21 +177,32 @@ export default function Orders() {
                 <div className={styles.simpleRow}>
                   <div className={styles.simpleLeft}>
                     <span className={styles.orderId}>#{order.order_id}</span>
-                    <span className={styles.customer}>{order.customer_name}</span>
-                  </div>
-                  <div className={styles.simpleMid}>
-                    <span
-                      className={`${styles.status} ${
-                        styles[order.status?.toLowerCase?.() || ""]
-                      }`}
-                    >
-                      {order.status}
+                    <span className={styles.customer}>
+                      {order.customer_name}
                     </span>
+                  </div>
+
+                  {/* TAGS lane (fixed) + meta */}
+                  <div className={styles.simpleMid}>
+                    <div className={styles.tags}>
+                      <span
+                        className={`${styles.status} ${
+                          styles[order.status?.toLowerCase?.() || ""]
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                      <span className={`${styles.type} ${typeClass(order)}`}>
+                        {orderType(order)}
+                      </span>
+                    </div>
+
                     <span className={styles.meta}>
                       {itemsCount(order)} items
                       {rentExists ? ` • Due: ${firstDueDate(order)}` : ""}
                     </span>
                   </div>
+
                   <div className={styles.simpleRight}>
                     <button
                       className={styles.moreBtn}
@@ -204,7 +232,10 @@ export default function Orders() {
                         </div>
                         {order.extensions_used >= 2 && (
                           <div className={styles.extensionWarning}>
-                            <em>⚠️ This rental has reached the maximum of 2 extensions.</em>
+                            <em>
+                              ⚠️ This rental has reached the maximum of 2
+                              extensions.
+                            </em>
                           </div>
                         )}
                       </div>

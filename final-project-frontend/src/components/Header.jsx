@@ -124,7 +124,7 @@ const homePath = isAdminOrStaff ? '/stock' : '/';
                             <button onClick={() => handleAdminSelect('/admin/email-replies')}>📧 Email Replies</button>
                             {role === 'Admin' && (
                               <>
-                                <button onClick={() => handleAdminSelect('/admin/stats')}>📊 Statistics</button>
+                                <button onClick={() => handleAdminSelect('/admin/stats')}>📊 Analytics</button>
                                 <button onClick={() => handleAdminSelect('/admin/discounts')}>💸 Manage Discounts</button>
                               </>
                             )}

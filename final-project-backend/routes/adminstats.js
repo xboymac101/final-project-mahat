@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../dbSingleton').getConnection();
 
+/* ---- helpers ---- */
 function isYmd(s) {
   return /^\d{4}-\d{2}-\d{2}$/.test(s);
 }
@@ -11,9 +12,10 @@ function buildDateFilter(q) {
   const range = parseInt(q.range, 10) || 30;
 
   if (fromDate && toDate && isYmd(fromDate) && isYmd(toDate)) {
-    // Include whole "to" day: [fromDate, toDate+1)
+    // include full "to" day: [fromDate, toDate+1)
     return {
-      whereSql: "o.order_date >= ? AND o.order_date < DATE_ADD(?, INTERVAL 1 DAY)",
+      whereSql:
+        "o.order_date >= ? AND o.order_date < DATE_ADD(?, INTERVAL 1 DAY)",
       params: [fromDate, toDate],
     };
   }
@@ -24,6 +26,7 @@ function buildDateFilter(q) {
   };
 }
 
+/* ---- GET /api/admin/stats ---- */
 router.get('/stats', async (req, res) => {
   try {
     const stats = {};
@@ -48,6 +51,15 @@ router.get('/stats', async (req, res) => {
     );
     stats.completedOrders = completedOrders[0]?.count || 0;
 
+    // Pending Orders  ✅
+    const [pendingOrders] = await conn.query(
+      `SELECT COUNT(*) AS count
+       FROM \`order\` o
+       WHERE o.status = 'Pending' AND ${whereSql}`,
+      params
+    );
+    stats.pendingOrders = pendingOrders[0]?.count || 0;
+
     // Canceled Orders
     const [canceledOrders] = await conn.query(
       `SELECT COUNT(*) AS count
@@ -67,7 +79,7 @@ router.get('/stats', async (req, res) => {
     );
     stats.revenue = Number(revenue[0]?.total) || 0;
 
-    // Top Book (by quantity in the period)
+    // Top Book (by quantity)
     const [topBook] = await conn.query(
       `SELECT b.title, SUM(oi.quantity) AS total_sold
        FROM order_items oi
@@ -81,7 +93,7 @@ router.get('/stats', async (req, res) => {
     );
     stats.topBook = topBook[0] || null;
 
-    // Top Customer (by number of orders in the period)
+    // Top Customer (by number of orders)
     const [topCustomer] = await conn.query(
       `SELECT u.name, COUNT(*) AS total_orders
        FROM \`order\` o
@@ -94,6 +106,14 @@ router.get('/stats', async (req, res) => {
     );
     stats.topCustomer = topCustomer[0] || null;
 
+// Out-of-stock books (inventory snapshot)
+const [oos] = await conn.query(
+  `SELECT COUNT(*) AS total
+   FROM book
+   WHERE COALESCE(\`count\`, 0) <= 0`
+);
+stats.outOfStockBooks = Number(oos[0]?.total) || 0;
+
     res.json(stats);
   } catch (err) {
     console.error("Stats error:", err);
@@ -101,7 +121,7 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// (Optional) Test helper to randomize dates:
+/* Optional helper to randomize dates for testing */
 router.post('/fake-dates', async (req, res) => {
   const conn = require('../dbSingleton').getConnection().promise();
   await conn.query(`
