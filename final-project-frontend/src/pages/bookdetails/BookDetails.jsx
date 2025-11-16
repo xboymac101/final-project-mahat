@@ -83,7 +83,7 @@ function handleReviewSubmit(e) {
     });
 }
 
-// actual add-to-cart POST logic
+// actual add-to-cart POST
 function proceedAdd() {
   axios.post(
     "/api/cart/add",

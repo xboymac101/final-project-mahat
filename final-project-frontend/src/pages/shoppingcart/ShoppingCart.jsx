@@ -98,7 +98,7 @@ export default function ShoppingCart() {
     if (processing) return;
     setProcessing(true);
 
-    // Enforce rent cap (client-side UX). Read from payload.items (object response).
+    // Check rent cap
     axios
       .get("/api/cart", { withCredentials: true })
       .then((res) => {

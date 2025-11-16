@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import styles from "./ThankYou.module.css"; // create this css file
+import styles from "./ThankYou.module.css"; 
 
 export default function ThankYou() {
   const navigate = useNavigate();

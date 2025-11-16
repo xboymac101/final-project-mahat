@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../dbSingleton').getConnection();
 
-/* ---- helpers ---- */
+// Helpers
 function isYmd(s) {
   return /^\d{4}-\d{2}-\d{2}$/.test(s);
 }
@@ -26,7 +26,7 @@ function buildDateFilter(q) {
   };
 }
 
-/* ---- GET /api/admin/stats ---- */
+// GET /api/admin/stats  
 router.get('/stats', async (req, res) => {
   try {
     const stats = {};
@@ -51,7 +51,7 @@ router.get('/stats', async (req, res) => {
     );
     stats.completedOrders = completedOrders[0]?.count || 0;
 
-    // Pending Orders  ✅
+    // Pending Orders  
     const [pendingOrders] = await conn.query(
       `SELECT COUNT(*) AS count
        FROM \`order\` o
@@ -121,7 +121,7 @@ stats.outOfStockBooks = Number(oos[0]?.total) || 0;
   }
 });
 
-/* Optional helper to randomize dates for testing */
+// Optional helper to randomize dates for testing
 router.post('/fake-dates', async (req, res) => {
   const conn = require('../dbSingleton').getConnection().promise();
   await conn.query(`

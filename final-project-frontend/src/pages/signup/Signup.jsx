@@ -89,7 +89,6 @@ export default function Signup() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          // HTML-level hint (browser validation tooltip)
           pattern={PASSWORD_REGEX.source}
           title="Min 8 chars, include uppercase, lowercase, number, and special (!@#$%^&*._-)."
         />

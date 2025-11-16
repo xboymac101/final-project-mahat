@@ -135,7 +135,7 @@ router.get('/orders', isAuthenticated, isAdminOrStaff, async (req, res) => {
   }
 });
 
-// PUT /api/admin/orders/:id  (unchanged except formatting)
+// PUT /api/admin/orders/:id  
 router.put('/orders/:id', isAuthenticated, isAdminOrStaff, async (req, res) => {
   const db = require('../dbSingleton').getConnection().promise();
   const orderId = req.params.id;

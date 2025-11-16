@@ -1,18 +1,17 @@
-// routes/createorder.js
 const express = require("express");
 const router = express.Router();
 const dbSingleton = require("../dbSingleton");
 const db = dbSingleton.getConnection();
 const { sendReceipt } = require("./email");
 
-// ---- helpers ----
+// Helpers 
 function q(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.query(sql, params, (err, rows) => (err ? reject(err) : resolve(rows)));
   });
 }
 
-// compute discounted unit price (book discount > category discount; rent = half)
+// Compute discounted unit price (book discount > category discount; rent = half)
 function computeUnitPriceFor(row, type) {
   const base =
     row.book_discount_percent != null
@@ -24,13 +23,13 @@ function computeUnitPriceFor(row, type) {
   return Math.round((unit + Number.EPSILON) * 100) / 100;
 }
 
-// require login
+// Require login
 function isLoggedIn(req, res, next) {
   if (!req.session?.user_id) return res.status(401).json({ message: "Not logged in" });
   next();
 }
 
-/**
+/*
  * POST /api/order/create
  * Body may include { paymentDetails }, but we ignore client cart and read cart from DB.
  */
@@ -66,7 +65,7 @@ router.post("/create", isLoggedIn, async (req, res) => {
       quantity: Number(r.quantity),
       type: r.type === "rent" ? "rent" : "buy",
       stock: Number(r.stock),
-      price: computeUnitPriceFor(r, r.type), // NOTE: uses column name "price" in order_items
+      price: computeUnitPriceFor(r, r.type), 
     }));
 
     for (const it of items) {
@@ -80,7 +79,6 @@ router.post("/create", isLoggedIn, async (req, res) => {
     // 3) Transaction: create order -> insert items -> decrement stock -> clear cart
     await q("START TRANSACTION");
 
-    // Your `order` columns: user_id, status, extensions_used, order_date, original_date
     const orderRes = await q(
       `INSERT INTO \`order\` (user_id, status, extensions_used, order_date, original_date)
        VALUES (?, 'Pending', 0, NOW(), NULL)`,

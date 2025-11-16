@@ -173,7 +173,7 @@ async function sendReceipt(orderId) {
     text,
   });
 
-  // Optional: log if you created email_log
+  // Log 
   try {
     await q(
       "INSERT INTO email_log (order_id, user_id, email_type) VALUES (?, ?, 'receipt')",
@@ -182,10 +182,7 @@ async function sendReceipt(orderId) {
   } catch {}
 }
 
-/* =========================================================
-   REMINDERS: fetch active rental items by order
-   - type='rent', due_date not null, not returned
-   ========================================================= */
+
 async function fetchActiveRentalItems() {
     const sql = `
   SELECT
@@ -285,9 +282,7 @@ function renderSummaryEmail(order, type) {
   };
 }
 
-/* =========================================================
-   email_log duplicate checks (safe if table exists)
-   ========================================================= */
+/* email_log duplicate checks (safe if table exists) */
 async function alreadySentToday(orderId, emailType) {
   try {
     const rows = await q(
@@ -308,9 +303,7 @@ async function insertLog(orderId, userId, emailType) {
   } catch {}
 }
 
-/* =========================================================
-   PUBLIC: runRemindersOnce (can be called manually)
-   ========================================================= */
+/* runRemindersOnce (can be called manually) */
 async function runRemindersOnce() {
   const rows = await fetchActiveRentalItems();
   const grouped = groupByOrder(rows);
@@ -331,9 +324,7 @@ async function runRemindersOnce() {
   }
 }
 
-/* =========================================================
-   CRON: start daily reminders at 09:00 Asia/Jerusalem
-   ========================================================= */
+/* CRON: start daily reminders at 09:00 Asia/Jerusalem */
 function startCron() {
   cron.schedule(
     "0 9 * * *",
@@ -345,9 +336,7 @@ function startCron() {
   console.log("⏰ Reminder cron scheduled for 09:00 Asia/Jerusalem");
 }
 
-/* =========================================================
-   EXISTING: Contact endpoint (kept for StaffEmailReplies)
-   ========================================================= */
+/* Contact endpoint (kept for StaffEmailReplies) */
 router.post("/contact", async (req, res) => {
   const { firstName, lastName, email, message } = req.body;
 
@@ -384,9 +373,7 @@ router.post("/contact", async (req, res) => {
   }
 });
 
-/* =========================================================
-   OPTIONAL: admin test endpoints
-   ========================================================= */
+/* OPTIONAL: admin test endpoints */
 router.post("/admin/email/test/receipt/:orderId", async (req, res) => {
   try {
     await sendReceipt(req.params.orderId);
@@ -407,9 +394,7 @@ router.post("/admin/email/test/run-reminders", async (_req, res) => {
   }
 });
 
-/* =========================================================
-   EXPORTS
-   ========================================================= */
+/* EXPORTS */
 module.exports = {
   router,
   transporter,

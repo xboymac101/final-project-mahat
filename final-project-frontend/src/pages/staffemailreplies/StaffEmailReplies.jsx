@@ -18,7 +18,7 @@ useEffect(() => {
       if (res.data.role !== "Staff" && res.data.role !== "Admin") {
         navigate("/unauthorized");
       } else {
-        setStaffId(res.data.user_id); // ✅ set the real staff ID
+        setStaffId(res.data.user_id);
         fetchMessages();
       }
     })

@@ -1,4 +1,3 @@
-// routes/profilestats.js
 const express = require('express');
 const router = express.Router();
 const dbSingleton = require('../dbSingleton');
@@ -8,7 +7,6 @@ const { isAuthenticated } = require('./authMiddleware');
 const SUCCESS_STATUSES = ['Completed', 'Paid'];
 
 router.get('/', isAuthenticated, (req, res) => {
-  // Robust role & user_id detection (supports req.user or req.session)
   const role =
     req.user?.role ??
     req.session?.role ??
@@ -110,7 +108,7 @@ router.get('/', isAuthenticated, (req, res) => {
         book_id: r.book_id,
         title: r.title,
         author: r.author,
-        image_url: r.image_url,           // frontend will ignore image for popular
+        image_url: r.image_url,           
         total_orders: Number(r.qty) || 0
       }));
 

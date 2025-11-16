@@ -12,7 +12,7 @@ export default function Orders() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("Pending");
-  const [expanded, setExpanded] = useState({}); // { [order_id]: boolean }
+  const [expanded, setExpanded] = useState({}); 
 
   const ordersPerPage = 5;
 
@@ -38,7 +38,6 @@ export default function Orders() {
 
   useEffect(() => {
     fetchOrders(currentPage, searchTerm, statusFilter);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, statusFilter, searchTerm]);
 
   function groupOrdersById(flatOrders) {
@@ -173,7 +172,7 @@ export default function Orders() {
 
             return (
               <li key={order.order_id} className={styles.orderItem}>
-                {/* SIMPLE ROW */}
+                {/* Simple Row */}
                 <div className={styles.simpleRow}>
                   <div className={styles.simpleLeft}>
                     <span className={styles.orderId}>#{order.order_id}</span>
@@ -215,7 +214,7 @@ export default function Orders() {
                   </div>
                 </div>
 
-                {/* DETAILS */}
+                {/* Details */}
                 {isOpen && (
                   <div
                     id={`order-details-${order.order_id}`}

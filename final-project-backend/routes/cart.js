@@ -1,17 +1,14 @@
-// routes/cart.js
 const express = require('express');
 const router = express.Router();
 const dbSingleton = require('../dbSingleton');
 const db = dbSingleton.getConnection();
 
 const TAX_RATE = 0.18; // 18% VAT
-const MAX_RENTALS = 5; // matches your rule "A maximum of 5 books may be borrowed at one time"
+const MAX_RENTALS = 5; // matches rule: "A maximum of 5 books may be borrowed at one time"
 
 function r2(x) { return Math.round((Number(x) + Number.EPSILON) * 100) / 100; }
 
-// ---------------------------------------------------------------------
 // Middleware: only Regular users can modify cart
-// ---------------------------------------------------------------------
 function blockNonRegularUsers(req, res, next) {
   const user_id = req.session.user_id;
   if (!user_id) return res.status(401).json({ message: 'Not logged in' });
@@ -25,14 +22,13 @@ function blockNonRegularUsers(req, res, next) {
   });
 }
 
-// ---------------------------------------------------------------------
 // POST /api/cart/add
 // Rental rules (DB-aware):
 //  - Active rental = order.status = 'Pending' AND (returned_at IS NULL OR due_date >= CURDATE())
 //  - Block renting the SAME book if active rental exists
 //  - Cap total active rentals across all orders to MAX_RENTALS
 //  - Then stock-check + upsert in shoppingcart
-// ---------------------------------------------------------------------
+
 router.post('/add', blockNonRegularUsers, (req, res) => {
   const user_id = req.session.user_id;
   const { book_id, amount, type } = req.body;
@@ -47,7 +43,6 @@ router.post('/add', blockNonRegularUsers, (req, res) => {
   // If BUY → skip rental checks
   if (type !== 'rent') return proceedToCartUpsert();
 
-  // Build the active predicate using your real columns (order.status, order_items.due_date / returned_at)
   const activePredicate = `
     o.status = 'Pending'
     AND (
@@ -103,7 +98,7 @@ router.post('/add', blockNonRegularUsers, (req, res) => {
     });
   });
 
-  // --- Upsert into shoppingcart with stock checks (works for buy+rent) ---
+  // Upsert into shoppingcart with stock checks (works for buy+rent) ---
   function proceedToCartUpsert() {
     // 1) current line amount (user+book+type)
     db.query(
@@ -179,10 +174,8 @@ router.post('/add', blockNonRegularUsers, (req, res) => {
   }
 });
 
-// ---------------------------------------------------------------------
 // GET /api/cart  — items + subtotal + tax + total (rent = price/2)
 // Discounts: prefer book-specific discount over category discount
-// ---------------------------------------------------------------------
 router.get('/', (req, res) => {
   const user_id = req.session.user_id;
   if (!user_id) return res.status(401).json({ message: 'Not logged in' });
@@ -259,9 +252,7 @@ router.get('/', (req, res) => {
   });
 });
 
-// ---------------------------------------------------------------------
 // POST /api/cart/remove  — remove a specific line
-// ---------------------------------------------------------------------
 router.post('/remove', blockNonRegularUsers, (req, res) => {
   const user_id = req.session.user_id;
   const { book_id, type } = req.body;
@@ -278,9 +269,7 @@ router.post('/remove', blockNonRegularUsers, (req, res) => {
   );
 });
 
-// ---------------------------------------------------------------------
 // POST /api/cart/decrease  — decrease qty by 1 (delete if zero)
-// ---------------------------------------------------------------------
 router.post('/decrease', blockNonRegularUsers, (req, res) => {
   const user_id = req.session.user_id;
   const { book_id, type } = req.body;
@@ -319,9 +308,7 @@ router.post('/decrease', blockNonRegularUsers, (req, res) => {
   );
 });
 
-// ---------------------------------------------------------------------
 // POST /api/cart/update  — set qty directly
-// ---------------------------------------------------------------------
 router.post('/update', blockNonRegularUsers, (req, res) => {
   const user_id = req.session.user_id;
   const { book_id, amount, type } = req.body;

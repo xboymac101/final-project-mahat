@@ -53,7 +53,7 @@ router.get('/', (req, res) => {
 });
 
 
-// ✅ GET single book by ID (already updated)
+// GET single book by ID (already updated)
 router.get('/:id', (req, res) => {
   const bookId = req.params.id;
   const sql = `
@@ -79,7 +79,7 @@ WHERE b.book_id = ?`;
   });
 });
 
-// ✅ PUT update book (staff/admin only)
+// PUT update book (staff/admin only)
 router.put('/:id', isAdminOrStaff, (req, res) => {
   const bookId = req.params.id;
   const { title, author, price, count } = req.body;
@@ -97,7 +97,7 @@ router.put('/:id', isAdminOrStaff, (req, res) => {
   });
 });
 
-// ✅ GET reviews for a book
+// GET reviews for a book
 router.get('/:id/reviews', (req, res) => {
   const bookId = req.params.id;
   const sql = `
@@ -116,7 +116,7 @@ router.get('/:id/reviews', (req, res) => {
   });
 });
 
-// ✅ POST add a review
+// POST add a review
 router.post('/:id/reviews', (req, res) => {
   const bookId = req.params.id;
   const { user_id, rating, comment } = req.body;
@@ -133,7 +133,7 @@ router.post('/:id/reviews', (req, res) => {
   });
 });
 
-// ✅ GET related books (same category, exclude current book)
+// GET related books (same category, exclude current book)
 router.get('/:id/related', (req, res) => {
   const bookId = req.params.id;
   const getCategory = 'SELECT category FROM book WHERE book_id = ?';

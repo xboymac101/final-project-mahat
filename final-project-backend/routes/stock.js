@@ -94,7 +94,7 @@ router.get("/stock", isAuthenticated, isAdminOrStaff, async (req, res) => {
   }
 });
 
-// -------- PUT /api/books/:id/stock --------
+// PUT /api/books/:id/stock 
 router.put("/:id/stock", isAuthenticated, isAdminOrStaff, async (req, res) => {
   try {
     const db = dbSingleton.getConnection().promise();

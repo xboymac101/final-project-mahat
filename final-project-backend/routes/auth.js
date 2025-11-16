@@ -13,7 +13,7 @@ const {
 const PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*._-])[A-Za-z\d!@#$%^&*._-]{8,}$/;
 
-// רישום משתמש חדש
+// Sign-Up 
 router.post('/register', (req, res) => {
   const { name, email, password, role } = req.body;
 
@@ -45,8 +45,8 @@ router.post('/register', (req, res) => {
     });
   });
 });
-// התחברות
-// התחברות (3 tries per day)
+
+// Login (3 tries per day)
 router.post("/login", (req, res) => {
   const rawEmail = req.body.email || "";
   const email = rawEmail.toLowerCase().trim();

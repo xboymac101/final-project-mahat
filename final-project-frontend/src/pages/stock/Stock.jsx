@@ -29,7 +29,7 @@ export default function Stock() {
   const [editingId, setEditingId] = useState(null);
   const [editQty, setEditQty] = useState("");
 
-  // ===== Fetch role and categories on mount =====
+  // Fetch role and categories on mount 
   useEffect(() => {
     let mounted = true;
     axios
@@ -52,7 +52,7 @@ axios
     };
   }, []);
 
-  // ===== Build URL =====
+  // Build URL 
   const buildUrl = useMemo(() => {
     const params = new URLSearchParams();
     params.set("page", page);
@@ -68,7 +68,7 @@ axios
     return `/api/books/stock?${params.toString()}`;
   }, [page, limit, search, category, lowOnly, lowThreshold, sortBy, sortDir]);
 
-  // ===== Fetch data =====
+  // Fetch data 
   useEffect(() => {
     let mounted = true;
     setLoading(true);
@@ -91,17 +91,15 @@ axios
       })
       .finally(() => mounted && setLoading(false));
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [buildUrl]);
 
-  // ===== Guards =====
+  // Guards 
   const isAdminOrStaff = role === "Admin" || role === "Staff";
   useEffect(() => {
-    // If you prefer redirecting:
-    // if (role && !isAdminOrStaff) navigate("/", { replace: true });
   }, [role, isAdminOrStaff, navigate]);
 
-  // ===== Helpers =====
+  // Helpers 
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   function onSort(col) {
@@ -134,7 +132,7 @@ axios
         { withCredentials: true }
       )
       .then(() => {
-        // Optimistic refresh
+        // refresh
         setItems((prev) =>
           prev.map((x) =>
             x.id === id ? { ...x, quantity_in_stock: qtyNum } : x
@@ -190,7 +188,7 @@ axios
     return s;
   }
 
-  // ===== Render =====
+  // Render 
   if (!role) {
     return <div className={styles.wrap}>Checking permissions…</div>;
   }

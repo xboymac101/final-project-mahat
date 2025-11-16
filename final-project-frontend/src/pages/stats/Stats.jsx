@@ -16,19 +16,16 @@ export default function Stats() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState("");
 
-  // Quick range state
+  // Quick range state(Default of 30 days)
   const [range, setRange] = useState(30);
 
-  // Live inputs (not yet applied)
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  // The dates that were actually applied (drive fetching)
-  const [appliedDates, setAppliedDates] = useState(null); // { from, to } | null
+  const [appliedDates, setAppliedDates] = useState(null);
 
   const navigate = useNavigate();
 
-  // Adjust these if your routes differ
   const ORDERS_PATH = "/admin/orders";
   const STOCK_PATH = "/stock";
 
